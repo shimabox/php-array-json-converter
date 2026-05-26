@@ -70,4 +70,31 @@ PHP;
         self::assertSame(200, $response->statusCode);
         self::assertStringContainsString('JSON parse error:', $response->body);
     }
+
+    public function testConvertsArrayLiteralToJson(): void
+    {
+        $app = new Application();
+
+        $response = $app->handle('POST', '/convert', [
+            'mode' => 'php_to_json',
+            'php_array' => "['name' => 'shimabox', 'skills' => ['PHP', 'Go']]",
+        ]);
+
+        self::assertSame(200, $response->statusCode);
+
+        $expected = <<<'JSON'
+{
+    "name": "shimabox",
+    "skills": [
+        "PHP",
+        "Go"
+    ]
+}
+JSON;
+
+        self::assertStringContainsString(
+            htmlspecialchars($expected, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
+            $response->body
+        );
+    }
 }

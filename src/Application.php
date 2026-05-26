@@ -9,6 +9,8 @@ final class Application
     public function __construct(
         private readonly HtmlRenderer $renderer = new HtmlRenderer(),
         private readonly ArrayLiteralFormatter $arrayLiteralFormatter = new ArrayLiteralFormatter(),
+        private readonly ArrayLiteralParser $arrayLiteralParser = new ArrayLiteralParser(),
+        private readonly JsonFormatter $jsonFormatter = new JsonFormatter(),
     ) {
     }
 
@@ -55,6 +57,25 @@ final class Application
                         200,
                         ['Content-Type' => 'text/html; charset=utf-8'],
                         $this->renderer->render('', $post['json'] ?? '', $error->getMessage())
+                    );
+                }
+            }
+
+            if (($post['mode'] ?? '') === 'php_to_json') {
+                try {
+                    $value = $this->arrayLiteralParser->parse($post['php_array'] ?? '');
+                    $json = $this->jsonFormatter->format($value);
+
+                    return new Response(
+                        200,
+                        ['Content-Type' => 'text/html; charset=utf-8'],
+                        $this->renderer->render($post['php_array'] ?? '', $json)
+                    );
+                } catch (ConversionError $error) {
+                    return new Response(
+                        200,
+                        ['Content-Type' => 'text/html; charset=utf-8'],
+                        $this->renderer->render($post['php_array'] ?? '', '', $error->getMessage())
                     );
                 }
             }
