@@ -2,6 +2,8 @@
 
 PHP配列リテラルとJSONを相互変換するローカルWebツールです。
 
+Repository / package name: `php-array-json-converter`
+
 ブラウザ上で以下の変換を行えます。
 
 - PHP配列リテラルからJSON

@@ -1,5 +1,5 @@
 {
-    "name": "shimabox/php-array-json",
+    "name": "shimabox/php-array-json-converter",
     "description": "Local web tool for converting between PHP array literals and JSON.",
     "type": "project",
     "license": "MIT",
