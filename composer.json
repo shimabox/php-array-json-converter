@@ -17,7 +17,12 @@
         "test": "phpunit",
         "analyse": "phpstan analyse",
         "format": "php-cs-fixer fix --allow-risky=yes",
-        "format-check": "php-cs-fixer fix --allow-risky=yes --dry-run --diff"
+        "format-check": "php-cs-fixer fix --allow-risky=yes --dry-run --diff",
+        "ci": [
+            "@format-check",
+            "@analyse",
+            "@test"
+        ]
     },
     "require": {
         "php": "^8.5"
