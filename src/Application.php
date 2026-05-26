@@ -19,14 +19,6 @@ final class Application
      */
     public function handle(string $method, string $path, array $post = []): Response
     {
-        if ($method === 'GET' && $path === '/health') {
-            return new Response(
-                200,
-                ['Content-Type' => 'application/json; charset=utf-8'],
-                '{"status":"ok"}',
-            );
-        }
-
         if ($method === 'GET' && $path === '/') {
             return new Response(
                 200,

@@ -9,17 +9,6 @@ use PHPUnit\Framework\TestCase;
 
 final class ApplicationTest extends TestCase
 {
-    public function testHealthReturnsJsonResponse(): void
-    {
-        $app = new Application();
-
-        $response = $app->handle('GET', '/health');
-
-        self::assertSame(200, $response->statusCode);
-        self::assertSame('application/json; charset=utf-8', $response->headers['Content-Type']);
-        self::assertSame('{"status":"ok"}', $response->body);
-    }
-
     public function testHomeRendersConverterUi(): void
     {
         $app = new Application();

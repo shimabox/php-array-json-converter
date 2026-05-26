@@ -93,6 +93,10 @@ final class ArrayLiteralParser
                 break;
             }
 
+            if (!$this->current()?->matches(',')) {
+                throw new ConversionError('Unsupported PHP syntax: unexpected token ' . $this->describe($this->current()) . '.');
+            }
+
             $this->consume(',');
 
             if ($this->consumeIf(']')) {

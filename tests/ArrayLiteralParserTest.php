@@ -50,6 +50,29 @@ PHP);
         ], $actual);
     }
 
+    public function testParsesFloatIntegerKeyAndNestedAssociativeArray(): void
+    {
+        $parser = new ArrayLiteralParser();
+
+        $actual = $parser->parse(<<<'PHP'
+[
+    10 => 'ten',
+    'ratio' => 0.75,
+    'profile' => [
+        'location' => 'Tokyo',
+    ],
+]
+PHP);
+
+        self::assertSame([
+            10 => 'ten',
+            'ratio' => 0.75,
+            'profile' => [
+                'location' => 'Tokyo',
+            ],
+        ], $actual);
+    }
+
     public function testRejectsFunctionCall(): void
     {
         $parser = new ArrayLiteralParser();
@@ -88,5 +111,45 @@ PHP);
         $this->expectExceptionMessage('Unsupported PHP syntax');
 
         $parser->parse("array('name' => 'shimabox')");
+    }
+
+    public function testRejectsExtraTokenAfterRootArray(): void
+    {
+        $parser = new ArrayLiteralParser();
+
+        $this->expectException(ConversionError::class);
+        $this->expectExceptionMessage('unexpected token');
+
+        $parser->parse("['name' => 'shimabox']; ['extra']");
+    }
+
+    public function testRejectsDoubleQuotedString(): void
+    {
+        $parser = new ArrayLiteralParser();
+
+        $this->expectException(ConversionError::class);
+        $this->expectExceptionMessage('double-quoted strings are not supported yet');
+
+        $parser->parse('["name" => "shimabox"]');
+    }
+
+    public function testRejectsClassConstant(): void
+    {
+        $parser = new ArrayLiteralParser();
+
+        $this->expectException(ConversionError::class);
+        $this->expectExceptionMessage('Unsupported PHP syntax');
+
+        $parser->parse("['status' => SomeClass::VALUE]");
+    }
+
+    public function testRejectsStringConcatenation(): void
+    {
+        $parser = new ArrayLiteralParser();
+
+        $this->expectException(ConversionError::class);
+        $this->expectExceptionMessage('Unsupported PHP syntax');
+
+        $parser->parse("['name' => 'shima' . 'box']");
     }
 }
