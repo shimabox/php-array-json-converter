@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace PhpArrayJson\Tests;
+namespace PhpArrayJsonConverter\Tests;
 
-use PhpArrayJson\ArrayLiteralParser;
-use PhpArrayJson\ConversionError;
+use PhpArrayJsonConverter\ArrayLiteralParser;
+use PhpArrayJsonConverter\ConversionError;
 use PHPUnit\Framework\TestCase;
 
 final class ArrayLiteralParserTest extends TestCase

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace PhpArrayJson\Tests;
+namespace PhpArrayJsonConverter\Tests;
 
-use PhpArrayJson\ArrayLiteralFormatter;
+use PhpArrayJsonConverter\ArrayLiteralFormatter;
 use PHPUnit\Framework\TestCase;
 
 final class ArrayLiteralFormatterTest extends TestCase

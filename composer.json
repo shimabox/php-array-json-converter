@@ -5,12 +5,12 @@
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "PhpArrayJson\\": "src/"
+            "PhpArrayJsonConverter\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "PhpArrayJson\\Tests\\": "tests/"
+            "PhpArrayJsonConverter\\Tests\\": "tests/"
         }
     },
     "scripts": {

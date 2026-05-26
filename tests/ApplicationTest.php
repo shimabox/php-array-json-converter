@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace PhpArrayJson\Tests;
+namespace PhpArrayJsonConverter\Tests;
 
-use PhpArrayJson\Application;
+use PhpArrayJsonConverter\Application;
 use PHPUnit\Framework\TestCase;
 
 final class ApplicationTest extends TestCase

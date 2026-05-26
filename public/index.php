@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use PhpArrayJson\Application;
+use PhpArrayJsonConverter\Application;
 
 require __DIR__ . '/../vendor/autoload.php';
 

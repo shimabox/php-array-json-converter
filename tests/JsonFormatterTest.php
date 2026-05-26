@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace PhpArrayJson\Tests;
+namespace PhpArrayJsonConverter\Tests;
 
-use PhpArrayJson\JsonFormatter;
+use PhpArrayJsonConverter\JsonFormatter;
 use PHPUnit\Framework\TestCase;
 
 final class JsonFormatterTest extends TestCase

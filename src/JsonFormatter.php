@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace PhpArrayJson;
+namespace PhpArrayJsonConverter;
 
 use JsonException;
 
