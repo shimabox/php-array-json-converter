@@ -129,29 +129,31 @@ final class HtmlRenderer
         }
 
         .editor-body textarea {
-            padding-top: 50px;
+            padding-top: 36px;
         }
 
         .copy-button {
             position: absolute;
-            top: 10px;
-            right: 10px;
+            top: 0;
+            right: 0;
             z-index: 1;
-            border: 1px solid rgba(248, 240, 223, 0.24);
-            background: rgba(248, 240, 223, 0.1);
+            border: 0;
+            border-bottom: 1px solid rgba(248, 240, 223, 0.16);
+            border-left: 1px solid rgba(248, 240, 223, 0.16);
+            border-radius: 0 8px 0 8px;
+            background: #343a46;
             color: #f8f0df;
-            font-size: 0.78rem;
-            padding: 7px 10px;
-            backdrop-filter: blur(8px);
+            font-size: 0.9rem;
+            padding: 10px 14px;
         }
 
         .copy-button:hover,
         .copy-button:focus-visible {
-            background: rgba(248, 240, 223, 0.18);
+            background: #424957;
         }
 
         .copy-button.is-copied {
-            border-color: rgba(114, 220, 167, 0.7);
+            background: #214f3c;
             color: #b9f4d5;
         }
 
