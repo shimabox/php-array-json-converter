@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace PhpArrayJson\Tests;
 
-use PHPUnit\Framework\TestCase;
 use PhpArrayJson\JsonFormatter;
+use PHPUnit\Framework\TestCase;
 
 final class JsonFormatterTest extends TestCase
 {
@@ -30,7 +30,7 @@ final class JsonFormatterTest extends TestCase
     ]
 }
 JSON,
-            $actual
+            $actual,
         );
     }
 }

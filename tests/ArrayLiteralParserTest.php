@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace PhpArrayJson\Tests;
 
-use PHPUnit\Framework\TestCase;
 use PhpArrayJson\ArrayLiteralParser;
 use PhpArrayJson\ConversionError;
+use PHPUnit\Framework\TestCase;
 
 final class ArrayLiteralParserTest extends TestCase
 {

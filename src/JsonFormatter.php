@@ -13,7 +13,7 @@ final class JsonFormatter
         try {
             return json_encode(
                 $value,
-                JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR
+                JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR,
             );
         } catch (JsonException $error) {
             throw new ConversionError('JSON encode error: ' . $error->getMessage(), previous: $error);

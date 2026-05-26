@@ -23,7 +23,7 @@ final class Application
             return new Response(
                 200,
                 ['Content-Type' => 'application/json; charset=utf-8'],
-                '{"status":"ok"}'
+                '{"status":"ok"}',
             );
         }
 
@@ -31,7 +31,7 @@ final class Application
             return new Response(
                 200,
                 ['Content-Type' => 'text/html; charset=utf-8'],
-                $this->renderer->render()
+                $this->renderer->render(),
             );
         }
 
@@ -44,19 +44,19 @@ final class Application
                     return new Response(
                         200,
                         ['Content-Type' => 'text/html; charset=utf-8'],
-                        $this->renderer->render($phpArray, $post['json'] ?? '')
+                        $this->renderer->render($phpArray, $post['json'] ?? ''),
                     );
                 } catch (\JsonException $error) {
                     return new Response(
                         200,
                         ['Content-Type' => 'text/html; charset=utf-8'],
-                        $this->renderer->render('', $post['json'] ?? '', 'JSON parse error: ' . $error->getMessage())
+                        $this->renderer->render('', $post['json'] ?? '', 'JSON parse error: ' . $error->getMessage()),
                     );
                 } catch (ConversionError $error) {
                     return new Response(
                         200,
                         ['Content-Type' => 'text/html; charset=utf-8'],
-                        $this->renderer->render('', $post['json'] ?? '', $error->getMessage())
+                        $this->renderer->render('', $post['json'] ?? '', $error->getMessage()),
                     );
                 }
             }
@@ -69,13 +69,13 @@ final class Application
                     return new Response(
                         200,
                         ['Content-Type' => 'text/html; charset=utf-8'],
-                        $this->renderer->render($post['php_array'] ?? '', $json)
+                        $this->renderer->render($post['php_array'] ?? '', $json),
                     );
                 } catch (ConversionError $error) {
                     return new Response(
                         200,
                         ['Content-Type' => 'text/html; charset=utf-8'],
-                        $this->renderer->render($post['php_array'] ?? '', '', $error->getMessage())
+                        $this->renderer->render($post['php_array'] ?? '', '', $error->getMessage()),
                     );
                 }
             }
@@ -84,7 +84,7 @@ final class Application
         return new Response(
             404,
             ['Content-Type' => 'text/plain; charset=utf-8'],
-            'Not Found'
+            'Not Found',
         );
     }
 }

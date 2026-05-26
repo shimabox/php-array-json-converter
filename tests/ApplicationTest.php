@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace PhpArrayJson\Tests;
 
-use PHPUnit\Framework\TestCase;
 use PhpArrayJson\Application;
+use PHPUnit\Framework\TestCase;
 
 final class ApplicationTest extends TestCase
 {
@@ -54,7 +54,7 @@ PHP;
 
         self::assertStringContainsString(
             htmlspecialchars($expected, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
-            $response->body
+            $response->body,
         );
     }
 
@@ -94,7 +94,7 @@ JSON;
 
         self::assertStringContainsString(
             htmlspecialchars($expected, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
-            $response->body
+            $response->body,
         );
     }
 }

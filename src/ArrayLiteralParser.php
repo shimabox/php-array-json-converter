@@ -155,7 +155,7 @@ final class ArrayLiteralParser
 
         $body = substr($literal, 1, -1);
 
-        return str_replace(["\\\\", "\\'"], ["\\", "'"], $body);
+        return str_replace(['\\\\', "\\'"], ['\\', "'"], $body);
     }
 
     private function consume(int|string $expected): Token

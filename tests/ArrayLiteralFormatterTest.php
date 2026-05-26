@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace PhpArrayJson\Tests;
 
-use PHPUnit\Framework\TestCase;
 use PhpArrayJson\ArrayLiteralFormatter;
+use PHPUnit\Framework\TestCase;
 
 final class ArrayLiteralFormatterTest extends TestCase
 {
@@ -32,7 +32,7 @@ final class ArrayLiteralFormatterTest extends TestCase
     ],
 ]
 PHP,
-            $actual
+            $actual,
         );
     }
 
@@ -57,7 +57,7 @@ PHP,
     'owner\'s path' => 'C:\\tmp\\owner\'s-file',
 ]
 PHP,
-            $actual
+            $actual,
         );
     }
 }

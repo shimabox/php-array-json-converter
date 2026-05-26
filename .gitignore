@@ -1,3 +1,4 @@
 IMPLEMENTATION_PLAN.md
 vendor/
 .phpunit.cache/
+.php-cs-fixer.cache
