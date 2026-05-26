@@ -173,6 +173,9 @@ final class ArrayLiteralParser
         return $token;
     }
 
+    /**
+     * @phpstan-impure
+     */
     private function consumeIf(int|string $expected): bool
     {
         $token = $this->current();
