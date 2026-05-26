@@ -6,6 +6,76 @@ namespace PhpArrayJsonConverter;
 
 final class Application
 {
+    private const DEFAULT_PHP_ARRAY = <<<'PHP'
+[
+    'project' => 'php-array-json-converter',
+    'version' => 1,
+    'active' => true,
+    'owner' => [
+        'name' => 'shimabox',
+        'location' => 'Chiba',
+        'roles' => [
+            'developer',
+            'maintainer',
+        ],
+    ],
+    'features' => [
+        [
+            'name' => 'array_to_json',
+            'enabled' => true,
+            'limits' => [
+                'supports_nested_arrays' => true,
+                'supports_eval' => false,
+                'max_depth' => null,
+            ],
+        ],
+        [
+            'name' => 'json_to_array',
+            'enabled' => true,
+            'formats' => [
+                'pretty',
+                'short_array_syntax',
+            ],
+        ],
+    ],
+    'sample_values' => [
+        'string' => 'hello',
+        'integer' => 123,
+        'float' => 12.34,
+        'boolean' => false,
+        'null_value' => null,
+        'unicode' => 'こんにちは',
+        'escaped' => 'quote: " double, slash: \\',
+    ],
+    'matrix' => [
+        [
+            1,
+            2,
+            3,
+        ],
+        [
+            4,
+            5,
+            6,
+        ],
+        [
+            7,
+            8,
+            9,
+        ],
+    ],
+    'metadata' => [
+        'created_at' => '2026-05-26T22:30:00+09:00',
+        'tags' => [
+            'php',
+            'json',
+            'converter',
+            'local-tool',
+        ],
+    ],
+]
+PHP;
+
     public function __construct(
         private readonly HtmlRenderer $renderer = new HtmlRenderer(),
         private readonly ArrayLiteralFormatter $arrayLiteralFormatter = new ArrayLiteralFormatter(),
@@ -23,7 +93,7 @@ final class Application
             return new Response(
                 200,
                 ['Content-Type' => 'text/html; charset=utf-8'],
-                $this->renderer->render(),
+                $this->renderer->render(self::DEFAULT_PHP_ARRAY),
             );
         }
 

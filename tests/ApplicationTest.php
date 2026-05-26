@@ -28,6 +28,9 @@ final class ApplicationTest extends TestCase
         self::assertStringContainsString('data-copy-target="json-input"', $response->body);
         self::assertStringContainsString('id="php-array-input"', $response->body);
         self::assertStringContainsString('id="json-input"', $response->body);
+        self::assertStringContainsString('php-array-json-converter', $response->body);
+        self::assertStringContainsString('Chiba', $response->body);
+        self::assertStringContainsString('quote: &quot; double, slash: \\', $response->body);
     }
 
     public function testConvertsJsonToArrayLiteral(): void
