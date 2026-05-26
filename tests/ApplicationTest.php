@@ -57,7 +57,8 @@ PHP;
             htmlspecialchars($expected, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
             $response->body,
         );
-        self::assertStringContainsString('data-focus-target="php_array"', $response->body);
+        self::assertStringNotContainsString('focus_target', $response->body);
+        self::assertStringNotContainsString('data-focus-target', $response->body);
         self::assertStringNotContainsString('autofocus', $response->body);
     }
 
@@ -104,7 +105,8 @@ JSON;
             htmlspecialchars($expected, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
             $response->body,
         );
-        self::assertStringContainsString('data-focus-target="json"', $response->body);
+        self::assertStringNotContainsString('focus_target', $response->body);
+        self::assertStringNotContainsString('data-focus-target', $response->body);
         self::assertStringNotContainsString('autofocus', $response->body);
     }
 }

@@ -6,7 +6,7 @@ namespace PhpArrayJsonConverter;
 
 final class HtmlRenderer
 {
-    public function render(string $phpArray = '', string $json = '', ?string $error = null, ?string $focusTarget = null): string
+    public function render(string $phpArray = '', string $json = '', ?string $error = null): string
     {
         $template = $this->loadTemplate();
 
@@ -14,7 +14,6 @@ final class HtmlRenderer
             '{{ php_array }}' => $this->escape($phpArray),
             '{{ json }}' => $this->escape($json),
             '{{ error }}' => $this->escape($error ?? ''),
-            '{{ focus_target }}' => $this->escape($focusTarget ?? ''),
         ]);
     }
 

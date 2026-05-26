@@ -206,7 +206,7 @@
         }
     </style>
 </head>
-<body data-focus-target="{{ focus_target }}">
+<body>
     <main class="app-shell">
         <header class="page-header">
             <h1>PHP Array JSON Converter</h1>
@@ -242,12 +242,34 @@
         </form>
     </main>
     <script>
-        const focusTargets = {
-            php_array: 'php-array-input',
-            json: 'json-input',
+        const conversionFocusStorageKey = 'conversionFocusTarget';
+        const conversionFocusTargets = {
+            php_to_json: 'json-input',
+            json_to_php: 'php-array-input',
         };
-        const focusTargetId = focusTargets[document.body.dataset.focusTarget];
-        const focusTarget = focusTargetId ? document.getElementById(focusTargetId) : null;
+        const errorMessage = document.querySelector('.error p');
+        const hasConversionError = errorMessage instanceof HTMLElement && errorMessage.textContent.trim() !== '';
+        const converterForm = document.querySelector('form.converter-grid');
+
+        if (converterForm instanceof HTMLFormElement) {
+            converterForm.addEventListener('submit', (event) => {
+                const submitter = event.submitter;
+
+                if (!(submitter instanceof HTMLButtonElement)) {
+                    return;
+                }
+
+                const focusTargetId = conversionFocusTargets[submitter.value];
+
+                if (focusTargetId) {
+                    sessionStorage.setItem(conversionFocusStorageKey, focusTargetId);
+                }
+            });
+        }
+
+        const focusTargetId = sessionStorage.getItem(conversionFocusStorageKey);
+        sessionStorage.removeItem(conversionFocusStorageKey);
+        const focusTarget = hasConversionError || !focusTargetId ? null : document.getElementById(focusTargetId);
 
         if (focusTarget instanceof HTMLTextAreaElement) {
             focusTarget.focus();

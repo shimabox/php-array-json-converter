@@ -106,7 +106,7 @@ PHP;
                     return new Response(
                         200,
                         ['Content-Type' => 'text/html; charset=utf-8'],
-                        $this->renderer->render($phpArray, $post['json'] ?? '', focusTarget: 'php_array'),
+                        $this->renderer->render($phpArray, $post['json'] ?? ''),
                     );
                 } catch (\JsonException $error) {
                     return new Response(
@@ -131,7 +131,7 @@ PHP;
                     return new Response(
                         200,
                         ['Content-Type' => 'text/html; charset=utf-8'],
-                        $this->renderer->render($post['php_array'] ?? '', $json, focusTarget: 'json'),
+                        $this->renderer->render($post['php_array'] ?? '', $json),
                     );
                 } catch (ConversionError $error) {
                     return new Response(
