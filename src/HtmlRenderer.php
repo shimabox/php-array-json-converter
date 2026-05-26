@@ -124,6 +124,37 @@ final class HtmlRenderer
             box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
         }
 
+        .editor-body {
+            position: relative;
+        }
+
+        .editor-body textarea {
+            padding-top: 50px;
+        }
+
+        .copy-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 1;
+            border: 1px solid rgba(248, 240, 223, 0.24);
+            background: rgba(248, 240, 223, 0.1);
+            color: #f8f0df;
+            font-size: 0.78rem;
+            padding: 7px 10px;
+            backdrop-filter: blur(8px);
+        }
+
+        .copy-button:hover,
+        .copy-button:focus-visible {
+            background: rgba(248, 240, 223, 0.18);
+        }
+
+        .copy-button.is-copied {
+            border-color: rgba(114, 220, 167, 0.7);
+            color: #b9f4d5;
+        }
+
         textarea:focus {
             outline: 3px solid rgba(15, 95, 107, 0.28);
             border-color: var(--accent);
@@ -199,18 +230,59 @@ final class HtmlRenderer
                     <h2>PHP Array</h2>
                     <button type="submit" name="mode" value="php_to_json">Array &rarr; JSON</button>
                 </div>
-                <textarea name="php_array" rows="20" cols="60" spellcheck="false">{$phpArray}</textarea>
+                <div class="editor-body">
+                    <button type="button" class="copy-button" data-copy-target="php-array-input">Copy</button>
+                    <textarea id="php-array-input" name="php_array" rows="20" cols="60" spellcheck="false">{$phpArray}</textarea>
+                </div>
             </section>
             <section class="editor-panel">
                 <div class="panel-header">
                     <h2>JSON</h2>
                     <button type="submit" name="mode" value="json_to_php">JSON &rarr; Array</button>
                 </div>
-                <textarea name="json" rows="20" cols="60" spellcheck="false">{$json}</textarea>
+                <div class="editor-body">
+                    <button type="button" class="copy-button" data-copy-target="json-input">Copy</button>
+                    <textarea id="json-input" name="json" rows="20" cols="60" spellcheck="false">{$json}</textarea>
+                </div>
             </section>
         </form>
         {$errorHtml}
     </main>
+    <script>
+        document.querySelectorAll('[data-copy-target]').forEach((button) => {
+            button.addEventListener('click', async () => {
+                const target = document.getElementById(button.dataset.copyTarget);
+
+                if (!(target instanceof HTMLTextAreaElement)) {
+                    return;
+                }
+
+                const originalText = button.textContent;
+
+                try {
+                    if (navigator.clipboard && window.isSecureContext) {
+                        await navigator.clipboard.writeText(target.value);
+                    } else {
+                        target.focus();
+                        target.select();
+                        document.execCommand('copy');
+                    }
+
+                    button.textContent = 'Copied';
+                    button.classList.add('is-copied');
+                    window.setTimeout(() => {
+                        button.textContent = originalText;
+                        button.classList.remove('is-copied');
+                    }, 1400);
+                } catch (error) {
+                    button.textContent = 'Failed';
+                    window.setTimeout(() => {
+                        button.textContent = originalText;
+                    }, 1400);
+                }
+            });
+        });
+    </script>
 </body>
 </html>
 HTML;

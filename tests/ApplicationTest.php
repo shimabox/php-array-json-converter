@@ -24,6 +24,10 @@ final class ApplicationTest extends TestCase
         self::assertStringContainsString('class="app-shell"', $response->body);
         self::assertStringContainsString('class="converter-grid"', $response->body);
         self::assertStringContainsString('class="editor-panel"', $response->body);
+        self::assertStringContainsString('data-copy-target="php-array-input"', $response->body);
+        self::assertStringContainsString('data-copy-target="json-input"', $response->body);
+        self::assertStringContainsString('id="php-array-input"', $response->body);
+        self::assertStringContainsString('id="json-input"', $response->body);
     }
 
     public function testConvertsJsonToArrayLiteral(): void
