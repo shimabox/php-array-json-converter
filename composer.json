@@ -9,9 +9,12 @@
         }
     },
     "scripts": {
-        "test": "php tests/run.php"
+        "test": "phpunit"
     },
     "require": {
         "php": "^8.5"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^12"
     }
 }

@@ -4,7 +4,7 @@ build:
 	docker compose build
 
 test:
-	docker compose run --rm app php tests/run.php
+	docker compose run --rm app vendor/bin/phpunit
 
 serve:
 	docker compose up app
@@ -14,3 +14,6 @@ shell:
 
 composer-dump:
 	docker compose run --rm app composer dump-autoload
+
+composer-install:
+	docker compose run --rm app composer install

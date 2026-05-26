@@ -2,20 +2,26 @@
 
 declare(strict_types=1);
 
+namespace PhpArrayJson\Tests;
+
+use PHPUnit\Framework\TestCase;
 use PhpArrayJson\ArrayLiteralFormatter;
 
-$runner->test('formats associative array as short array literal', function (): void {
-    $formatter = new ArrayLiteralFormatter();
+final class ArrayLiteralFormatterTest extends TestCase
+{
+    public function testFormatsAssociativeArrayAsShortArrayLiteral(): void
+    {
+        $formatter = new ArrayLiteralFormatter();
 
-    $actual = $formatter->format([
-        'name' => 'shimabox',
-        'age' => 40,
-        'active' => true,
-        'skills' => ['PHP', 'Go'],
-    ]);
+        $actual = $formatter->format([
+            'name' => 'shimabox',
+            'age' => 40,
+            'active' => true,
+            'skills' => ['PHP', 'Go'],
+        ]);
 
-    assertSameValue(
-        <<<'PHP'
+        self::assertSame(
+            <<<'PHP'
 [
     'name' => 'shimabox',
     'age' => 40,
@@ -26,29 +32,32 @@ $runner->test('formats associative array as short array literal', function (): v
     ],
 ]
 PHP,
-        $actual
-    );
-});
+            $actual
+        );
+    }
 
-$runner->test('formats empty array on one line', function (): void {
-    $formatter = new ArrayLiteralFormatter();
+    public function testFormatsEmptyArrayOnOneLine(): void
+    {
+        $formatter = new ArrayLiteralFormatter();
 
-    assertSameValue('[]', $formatter->format([]));
-});
+        self::assertSame('[]', $formatter->format([]));
+    }
 
-$runner->test('escapes string keys and values', function (): void {
-    $formatter = new ArrayLiteralFormatter();
+    public function testEscapesStringKeysAndValues(): void
+    {
+        $formatter = new ArrayLiteralFormatter();
 
-    $actual = $formatter->format([
-        "owner's path" => "C:\\tmp\\owner's-file",
-    ]);
+        $actual = $formatter->format([
+            "owner's path" => "C:\\tmp\\owner's-file",
+        ]);
 
-    assertSameValue(
-        <<<'PHP'
+        self::assertSame(
+            <<<'PHP'
 [
     'owner\'s path' => 'C:\\tmp\\owner\'s-file',
 ]
 PHP,
-        $actual
-    );
-});
+            $actual
+        );
+    }
+}

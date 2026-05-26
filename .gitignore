@@ -1,1 +1,3 @@
 IMPLEMENTATION_PLAN.md
+vendor/
+.phpunit.cache/
