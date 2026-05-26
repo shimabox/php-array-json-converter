@@ -89,7 +89,7 @@ PHP;
      */
     public function handle(string $method, string $path, array $post = []): Response
     {
-        if ($method === 'GET' && $path === '/') {
+        if ($method === 'GET' && ($path === '/' || $path === '/convert')) {
             return new Response(
                 200,
                 ['Content-Type' => 'text/html; charset=utf-8'],
@@ -97,7 +97,7 @@ PHP;
             );
         }
 
-        if ($method === 'POST' && $path === '/convert') {
+        if ($method === 'POST' && ($path === '/' || $path === '/convert')) {
             if (($post['mode'] ?? '') === 'json_to_php') {
                 try {
                     $value = json_decode($post['json'] ?? '', true, flags: JSON_THROW_ON_ERROR);

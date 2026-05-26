@@ -218,11 +218,11 @@
             <p>{{ error }}</p>
         </section>
 
-        <form method="post" action="/convert" class="converter-grid">
+        <form method="post" action="/" class="converter-grid">
             <section class="editor-panel">
                 <div class="panel-header">
                     <h2>PHP Array</h2>
-                    <button type="submit" name="mode" value="php_to_json" formaction="/convert#focus-json">Array &rarr; JSON</button>
+                    <button type="submit" name="mode" value="php_to_json" formaction="/#focus-json">Array &rarr; JSON</button>
                 </div>
                 <div class="editor-body">
                     <button type="button" class="copy-button" data-copy-target="php-array-input">Copy</button>
@@ -232,7 +232,7 @@
             <section class="editor-panel">
                 <div class="panel-header">
                     <h2>JSON</h2>
-                    <button type="submit" name="mode" value="json_to_php" formaction="/convert#focus-php-array">JSON &rarr; Array</button>
+                    <button type="submit" name="mode" value="json_to_php" formaction="/#focus-php-array">JSON &rarr; Array</button>
                 </div>
                 <div class="editor-body">
                     <button type="button" class="copy-button" data-copy-target="json-input">Copy</button>
