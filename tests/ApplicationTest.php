@@ -30,6 +30,8 @@ final class ApplicationTest extends TestCase
         self::assertStringContainsString('PHP Array JSON Converter', $response->body);
         self::assertStringContainsString('name="php_array"', $response->body);
         self::assertStringContainsString('name="json"', $response->body);
+        self::assertStringContainsString('Array &rarr; JSON', $response->body);
+        self::assertStringContainsString('JSON &rarr; Array', $response->body);
     }
 
     public function testConvertsJsonToArrayLiteral(): void

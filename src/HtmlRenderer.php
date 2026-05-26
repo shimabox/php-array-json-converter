@@ -28,12 +28,12 @@ final class HtmlRenderer
         <section>
             <h2>PHP Array</h2>
             <textarea name="php_array" rows="20" cols="60">{$phpArray}</textarea>
-            <button type="submit" name="mode" value="php_to_json">PHP to JSON</button>
+            <button type="submit" name="mode" value="php_to_json">Array &rarr; JSON</button>
         </section>
         <section>
             <h2>JSON</h2>
             <textarea name="json" rows="20" cols="60">{$json}</textarea>
-            <button type="submit" name="mode" value="json_to_php">JSON to PHP</button>
+            <button type="submit" name="mode" value="json_to_php">JSON &rarr; Array</button>
         </section>
     </form>
     {$errorHtml}
