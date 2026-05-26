@@ -1,0 +1,8 @@
+.git
+.gitignore
+.dockerignore
+IMPLEMENTATION_PLAN.md
+vendor
+coverage
+.phpunit.cache
+.DS_Store
