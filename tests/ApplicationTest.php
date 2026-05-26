@@ -71,6 +71,10 @@ PHP;
         self::assertSame(200, $response->statusCode);
         self::assertStringContainsString('JSON parse error:', $response->body);
         self::assertStringContainsString('role="alert"', $response->body);
+        self::assertLessThan(
+            strpos($response->body, '<form'),
+            strpos($response->body, 'role="alert"'),
+        );
     }
 
     public function testConvertsArrayLiteralToJson(): void

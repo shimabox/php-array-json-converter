@@ -167,7 +167,7 @@
         }
 
         .error {
-            margin-top: 16px;
+            margin-bottom: 16px;
             border: 1px solid var(--error-line);
             border-left-width: 6px;
             border-radius: 8px;
@@ -209,6 +209,8 @@
             <p class="tagline">Paste a PHP array literal or JSON document. Conversion runs locally and never executes PHP input.</p>
         </header>
 
+        {{ error_html }}
+
         <form method="post" action="/convert" class="converter-grid">
             <section class="editor-panel">
                 <div class="panel-header">
@@ -231,7 +233,6 @@
                 </div>
             </section>
         </form>
-        {{ error_html }}
     </main>
     <script>
         document.querySelectorAll('[data-copy-target]').forEach((button) => {
