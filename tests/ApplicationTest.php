@@ -21,6 +21,8 @@ final class ApplicationTest extends TestCase
         self::assertStringContainsString('name="json"', $response->body);
         self::assertStringContainsString('Array &rarr; JSON', $response->body);
         self::assertStringContainsString('JSON &rarr; Array', $response->body);
+        self::assertStringContainsString('formaction="/convert#focus-json"', $response->body);
+        self::assertStringContainsString('formaction="/convert#focus-php-array"', $response->body);
         self::assertStringContainsString('class="app-shell"', $response->body);
         self::assertStringContainsString('class="converter-grid"', $response->body);
         self::assertStringContainsString('class="editor-panel"', $response->body);
@@ -59,6 +61,7 @@ PHP;
         );
         self::assertStringNotContainsString('focus_target', $response->body);
         self::assertStringNotContainsString('data-focus-target', $response->body);
+        self::assertStringNotContainsString('sessionStorage', $response->body);
         self::assertStringNotContainsString('autofocus', $response->body);
     }
 
@@ -107,6 +110,7 @@ JSON;
         );
         self::assertStringNotContainsString('focus_target', $response->body);
         self::assertStringNotContainsString('data-focus-target', $response->body);
+        self::assertStringNotContainsString('sessionStorage', $response->body);
         self::assertStringNotContainsString('autofocus', $response->body);
     }
 }
