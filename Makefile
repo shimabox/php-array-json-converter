@@ -4,7 +4,7 @@ build:
 	docker compose build
 
 test:
-	docker compose run --rm app vendor/bin/phpunit
+	docker compose run --rm app composer test
 
 serve:
 	docker compose up app

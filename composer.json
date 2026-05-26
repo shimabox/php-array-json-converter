@@ -8,6 +8,11 @@
             "PhpArrayJson\\": "src/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "PhpArrayJson\\Tests\\": "tests/"
+        }
+    },
     "scripts": {
         "test": "phpunit"
     },

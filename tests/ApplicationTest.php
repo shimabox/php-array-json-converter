@@ -1,0 +1,73 @@
+<?php
+
+declare(strict_types=1);
+
+namespace PhpArrayJson\Tests;
+
+use PHPUnit\Framework\TestCase;
+use PhpArrayJson\Application;
+
+final class ApplicationTest extends TestCase
+{
+    public function testHealthReturnsJsonResponse(): void
+    {
+        $app = new Application();
+
+        $response = $app->handle('GET', '/health');
+
+        self::assertSame(200, $response->statusCode);
+        self::assertSame('application/json; charset=utf-8', $response->headers['Content-Type']);
+        self::assertSame('{"status":"ok"}', $response->body);
+    }
+
+    public function testHomeRendersConverterUi(): void
+    {
+        $app = new Application();
+
+        $response = $app->handle('GET', '/');
+
+        self::assertSame(200, $response->statusCode);
+        self::assertStringContainsString('PHP Array JSON Converter', $response->body);
+        self::assertStringContainsString('name="php_array"', $response->body);
+        self::assertStringContainsString('name="json"', $response->body);
+    }
+
+    public function testConvertsJsonToArrayLiteral(): void
+    {
+        $app = new Application();
+
+        $response = $app->handle('POST', '/convert', [
+            'mode' => 'json_to_php',
+            'json' => '{"name":"shimabox","skills":["PHP","Go"]}',
+        ]);
+
+        self::assertSame(200, $response->statusCode);
+        $expected = <<<'PHP'
+[
+    'name' => 'shimabox',
+    'skills' => [
+        'PHP',
+        'Go',
+    ],
+]
+PHP;
+
+        self::assertStringContainsString(
+            htmlspecialchars($expected, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
+            $response->body
+        );
+    }
+
+    public function testShowsJsonParseError(): void
+    {
+        $app = new Application();
+
+        $response = $app->handle('POST', '/convert', [
+            'mode' => 'json_to_php',
+            'json' => '{"name":',
+        ]);
+
+        self::assertSame(200, $response->statusCode);
+        self::assertStringContainsString('JSON parse error:', $response->body);
+    }
+}
