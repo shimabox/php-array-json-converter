@@ -175,6 +175,10 @@
             padding: 14px 16px;
         }
 
+        .error:has(p:empty) {
+            display: none;
+        }
+
         .error h2 {
             color: #9f3517;
             margin-bottom: 6px;
@@ -202,14 +206,17 @@
         }
     </style>
 </head>
-<body>
+<body data-focus-target="{{ focus_target }}">
     <main class="app-shell">
         <header class="page-header">
             <h1>PHP Array JSON Converter</h1>
             <p class="tagline">Paste a PHP array literal or JSON document. Conversion runs locally and never executes PHP input.</p>
         </header>
 
-        {{ error_html }}
+        <section class="error" role="alert">
+            <h2>Error</h2>
+            <p>{{ error }}</p>
+        </section>
 
         <form method="post" action="/convert" class="converter-grid">
             <section class="editor-panel">
@@ -219,7 +226,7 @@
                 </div>
                 <div class="editor-body">
                     <button type="button" class="copy-button" data-copy-target="php-array-input">Copy</button>
-                    <textarea id="php-array-input" name="php_array" rows="20" cols="60" spellcheck="false"{{ php_array_autofocus }}>{{ php_array }}</textarea>
+                    <textarea id="php-array-input" name="php_array" rows="20" cols="60" spellcheck="false">{{ php_array }}</textarea>
                 </div>
             </section>
             <section class="editor-panel">
@@ -229,12 +236,23 @@
                 </div>
                 <div class="editor-body">
                     <button type="button" class="copy-button" data-copy-target="json-input">Copy</button>
-                    <textarea id="json-input" name="json" rows="20" cols="60" spellcheck="false"{{ json_autofocus }}>{{ json }}</textarea>
+                    <textarea id="json-input" name="json" rows="20" cols="60" spellcheck="false">{{ json }}</textarea>
                 </div>
             </section>
         </form>
     </main>
     <script>
+        const focusTargets = {
+            php_array: 'php-array-input',
+            json: 'json-input',
+        };
+        const focusTargetId = focusTargets[document.body.dataset.focusTarget];
+        const focusTarget = focusTargetId ? document.getElementById(focusTargetId) : null;
+
+        if (focusTarget instanceof HTMLTextAreaElement) {
+            focusTarget.focus();
+        }
+
         document.querySelectorAll('[data-copy-target]').forEach((button) => {
             button.addEventListener('click', async () => {
                 const target = document.getElementById(button.dataset.copyTarget);

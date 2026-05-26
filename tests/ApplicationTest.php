@@ -57,7 +57,8 @@ PHP;
             htmlspecialchars($expected, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
             $response->body,
         );
-        self::assertStringContainsString('id="php-array-input" name="php_array" rows="20" cols="60" spellcheck="false" autofocus', $response->body);
+        self::assertStringContainsString('data-focus-target="php_array"', $response->body);
+        self::assertStringNotContainsString('autofocus', $response->body);
     }
 
     public function testShowsJsonParseError(): void
@@ -103,6 +104,7 @@ JSON;
             htmlspecialchars($expected, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
             $response->body,
         );
-        self::assertStringContainsString('id="json-input" name="json" rows="20" cols="60" spellcheck="false" autofocus', $response->body);
+        self::assertStringContainsString('data-focus-target="json"', $response->body);
+        self::assertStringNotContainsString('autofocus', $response->body);
     }
 }

@@ -13,9 +13,8 @@ final class HtmlRenderer
         return strtr($template, [
             '{{ php_array }}' => $this->escape($phpArray),
             '{{ json }}' => $this->escape($json),
-            '{{ error_html }}' => $this->renderError($error),
-            '{{ php_array_autofocus }}' => $focusTarget === 'php_array' ? ' autofocus' : '',
-            '{{ json_autofocus }}' => $focusTarget === 'json' ? ' autofocus' : '',
+            '{{ error }}' => $this->escape($error ?? ''),
+            '{{ focus_target }}' => $this->escape($focusTarget ?? ''),
         ]);
     }
 
@@ -28,15 +27,6 @@ final class HtmlRenderer
         }
 
         return $template;
-    }
-
-    private function renderError(?string $error): string
-    {
-        if ($error === null) {
-            return '';
-        }
-
-        return '<section class="error" role="alert"><h2>Error</h2><p>' . $this->escape($error) . '</p></section>';
     }
 
     private function escape(string $value): string
