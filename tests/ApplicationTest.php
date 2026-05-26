@@ -21,6 +21,9 @@ final class ApplicationTest extends TestCase
         self::assertStringContainsString('name="json"', $response->body);
         self::assertStringContainsString('Array &rarr; JSON', $response->body);
         self::assertStringContainsString('JSON &rarr; Array', $response->body);
+        self::assertStringContainsString('class="app-shell"', $response->body);
+        self::assertStringContainsString('class="converter-grid"', $response->body);
+        self::assertStringContainsString('class="editor-panel"', $response->body);
     }
 
     public function testConvertsJsonToArrayLiteral(): void
@@ -60,6 +63,7 @@ PHP;
 
         self::assertSame(200, $response->statusCode);
         self::assertStringContainsString('JSON parse error:', $response->body);
+        self::assertStringContainsString('role="alert"', $response->body);
     }
 
     public function testConvertsArrayLiteralToJson(): void
