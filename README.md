@@ -5,6 +5,7 @@ PHP配列リテラルとJSONを相互変換するローカルWebツールです�
 Repository / package name: `php-array-json-converter`
 
 設計の詳細は [docs/architecture.md](docs/architecture.md) を参照してください。
+単体バイナリ配布については [docs/static-binary.md](docs/static-binary.md) を参照してください。
 
 ## セットアップ
 

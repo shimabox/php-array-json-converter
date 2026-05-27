@@ -16,22 +16,29 @@ if (!is_string($path) || $path === '') {
     $path = '/';
 }
 
+if ($path === '/') {
+    header('Content-Type: text/html; charset=UTF-8');
+    readfile(__DIR__ . '/index.html');
+
+    return true;
+}
+
 if (!str_starts_with($path, '/api/')) {
     return false;
 }
 
 require __DIR__ . '/../vendor/autoload.php';
 
-$body = file_get_contents('php://input');
-
-if ($body === false) {
-    $body = '';
-}
-
 $requestMethod = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 
 if (!is_string($requestMethod)) {
     $requestMethod = 'GET';
+}
+
+$body = file_get_contents('php://input');
+
+if ($body === false) {
+    $body = '';
 }
 
 $app = new Application();

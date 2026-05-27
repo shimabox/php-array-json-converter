@@ -18,9 +18,13 @@ public/assets/style.css
 public/assets/app.js
   fetch / focus / copy
 
-public/router.php
-  PHP built-in server 用の入口
+public/index.php
+  PHP built-in server / FrankenPHP 共通の入口
   /api/* だけ PHP アプリケーションへ渡す
+
+Caddyfile
+  FrankenPHP 用のルーティング
+  /api/* は PHP へ渡し、それ以外は静的ファイルとして配信する
 
 src/Application.php
   HTTP method + path の dispatch
@@ -70,7 +74,7 @@ Content-Type: application/json
 PHP側の流れ:
 
 ```text
-public/router.php
+public/index.php
   -> Application::handle()
   -> ConvertController::convert()
   -> Converter::arrayToJson() または Converter::jsonToArray()
@@ -153,11 +157,18 @@ Response:
 - 変換後のフォーカス制御
 - copyボタン
 
-### `public/router.php`
+### `public/index.php`
 
-- PHP built-in server の router script
+- PHP built-in server / FrankenPHP 共通の入口
 - `/api/*` 以外は静的ファイル配信へ戻す
-- `/api/*` は `Application` へ渡す
+- `Application` を呼び出し、HTTP responseを出力する
+- HTMLは生成しない
+
+### `Caddyfile`
+
+- FrankenPHP 用のルーティング
+- `/api/*` は `public/index.php` にrewriteしてPHPに渡す
+- それ以外は `public/index.html` と `public/assets/*` を静的ファイルとして配信する
 
 ### `Application`
 
@@ -258,6 +269,12 @@ PHPの値をPHP短縮配列リテラル文字列へ整形します。
 ### `JsonFormatter`
 
 PHPの値を整形済みJSON文字列へ変換します。
+
+## 単体バイナリ配布
+
+Web UIを維持した単体配布は、FrankenPHPのstatic binaryで検証します。
+
+詳細は [docs/static-binary.md](static-binary.md) を参照してください。
 
 ## StaticPHP への考慮
 

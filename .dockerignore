@@ -4,5 +4,8 @@
 IMPLEMENTATION_PLAN.md
 vendor
 coverage
+dist
+build
+php-array-json-converter
 .phpunit.cache
 .DS_Store

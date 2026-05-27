@@ -1,0 +1,16 @@
+{
+	auto_https off
+}
+
+:8080 {
+	root * public
+
+	handle /api/* {
+		rewrite * /index.php
+		php
+	}
+
+	handle {
+		file_server
+	}
+}
