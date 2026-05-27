@@ -73,7 +73,7 @@ final class ArrayLiteralParser
         $this->consume('[');
 
         $items = [];
-        $nextIndex = 0;
+        $nextIntegerKey = null;
 
         while (!$this->consumeIf(']')) {
             $first = $this->parseValue();
@@ -84,9 +84,14 @@ final class ArrayLiteralParser
                 }
 
                 $items[$first] = $this->parseValue();
+
+                if (is_int($first)) {
+                    $nextIntegerKey = $this->advanceNextIntegerKey($nextIntegerKey, $first);
+                }
             } else {
-                $items[$nextIndex] = $first;
-                $nextIndex++;
+                $key = $nextIntegerKey ?? 0;
+                $items[$key] = $first;
+                $nextIntegerKey = $key + 1;
             }
 
             if ($this->consumeIf(']')) {
@@ -105,6 +110,15 @@ final class ArrayLiteralParser
         }
 
         return $items;
+    }
+
+    private function advanceNextIntegerKey(?int $nextIntegerKey, int $usedKey): int
+    {
+        if ($nextIntegerKey === null || $usedKey >= $nextIntegerKey) {
+            return $usedKey + 1;
+        }
+
+        return $nextIntegerKey;
     }
 
     private function parseValue(): mixed
@@ -137,6 +151,12 @@ final class ArrayLiteralParser
             return (float) $token->text;
         }
 
+        if ($token->matches('-')) {
+            $this->position++;
+
+            return $this->parseNegativeNumber();
+        }
+
         if ($token->id === T_STRING) {
             $this->position++;
 
@@ -146,6 +166,25 @@ final class ArrayLiteralParser
                 'null' => null,
                 default => throw new ConversionError('Unsupported PHP syntax: ' . $token->text . ' is not allowed.'),
             };
+        }
+
+        throw new ConversionError('Unsupported PHP syntax: unexpected token ' . $this->describe($token) . '.');
+    }
+
+    private function parseNegativeNumber(): int|float
+    {
+        $token = $this->current();
+
+        if ($token?->id === T_LNUMBER) {
+            $this->position++;
+
+            return -(int) $token->text;
+        }
+
+        if ($token?->id === T_DNUMBER) {
+            $this->position++;
+
+            return -(float) $token->text;
         }
 
         throw new ConversionError('Unsupported PHP syntax: unexpected token ' . $this->describe($token) . '.');

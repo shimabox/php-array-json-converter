@@ -73,6 +73,70 @@ PHP);
         ], $actual);
     }
 
+    public function testParsesEmptyArrayLiteral(): void
+    {
+        $parser = new ArrayLiteralParser();
+
+        self::assertSame([], $parser->parse('[]'));
+    }
+
+    public function testParsesEscapedSingleQuotedString(): void
+    {
+        $parser = new ArrayLiteralParser();
+
+        $actual = $parser->parse(<<<'PHP'
+[
+    'quote' => 'It\'s ok',
+    'slash' => 'C:\\temp',
+]
+PHP);
+
+        self::assertSame([
+            'quote' => "It's ok",
+            'slash' => 'C:\temp',
+        ], $actual);
+    }
+
+    public function testParsesImplicitIndexAfterExplicitIntegerKeyLikePhp(): void
+    {
+        $parser = new ArrayLiteralParser();
+
+        $actual = $parser->parse(<<<'PHP'
+[
+    2 => 'two',
+    'three',
+    0 => 'zero',
+    'four',
+]
+PHP);
+
+        self::assertSame([
+            2 => 'two',
+            3 => 'three',
+            0 => 'zero',
+            4 => 'four',
+        ], $actual);
+    }
+
+    public function testParsesNegativeNumbers(): void
+    {
+        $parser = new ArrayLiteralParser();
+
+        $actual = $parser->parse(<<<'PHP'
+[
+    'int' => -123,
+    'float' => -12.34,
+    -1 => 'negative key',
+]
+PHP);
+
+        self::assertSame([
+            'int' => -123,
+            'float' => -12.34,
+            -1 => 'negative key',
+        ], $actual);
+    }
+
     public function testRejectsFunctionCall(): void
     {
         $parser = new ArrayLiteralParser();
@@ -151,5 +215,15 @@ PHP);
         $this->expectExceptionMessage('Unsupported PHP syntax');
 
         $parser->parse("['name' => 'shima' . 'box']");
+    }
+
+    public function testRejectsSpreadOperator(): void
+    {
+        $parser = new ArrayLiteralParser();
+
+        $this->expectException(ConversionError::class);
+        $this->expectExceptionMessage('Unsupported PHP syntax');
+
+        $parser->parse("[...'items']");
     }
 }
