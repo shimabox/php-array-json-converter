@@ -335,6 +335,12 @@
             setError(result.error ?? '');
         }
 
+        function focusStart(target) {
+            target.focus();
+            target.setSelectionRange(0, 0);
+            target.scrollTop = 0;
+        }
+
         async function runConversion(payload, focusTarget) {
             try {
                 const result = await convert(payload);
@@ -342,7 +348,7 @@
                 applyConversionResult(result);
 
                 if (!result.error) {
-                    focusTarget.focus();
+                    focusStart(focusTarget);
                 }
             } catch (error) {
                 setError('Conversion request failed.');
