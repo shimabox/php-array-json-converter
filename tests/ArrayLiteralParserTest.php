@@ -137,6 +137,37 @@ PHP);
         ], $actual);
     }
 
+    public function testParsesDeeplyNestedArrayLiteral(): void
+    {
+        $parser = new ArrayLiteralParser();
+
+        $actual = $parser->parse(<<<'PHP'
+[
+    'level1' => [
+        'level2' => [
+            'level3' => [
+                'level4' => [
+                    'value' => 'deep',
+                ],
+            ],
+        ],
+    ],
+]
+PHP);
+
+        self::assertSame([
+            'level1' => [
+                'level2' => [
+                    'level3' => [
+                        'level4' => [
+                            'value' => 'deep',
+                        ],
+                    ],
+                ],
+            ],
+        ], $actual);
+    }
+
     public function testRejectsFunctionCall(): void
     {
         $parser = new ArrayLiteralParser();
@@ -145,6 +176,22 @@ PHP);
         $this->expectExceptionMessage('Unsupported PHP syntax');
 
         $parser->parse("['name' => getenv('USER')]");
+    }
+
+    public function testRejectsFunctionCallWithoutExecutingInput(): void
+    {
+        $parser = new ArrayLiteralParser();
+        $path = tempnam(sys_get_temp_dir(), 'array-parser-');
+        self::assertIsString($path);
+        unlink($path);
+
+        try {
+            $parser->parse("['written' => file_put_contents('{$path}', 'executed')]");
+            self::fail('Expected ConversionError was not thrown.');
+        } catch (ConversionError $error) {
+            self::assertStringContainsString('Unsupported PHP syntax', $error->getMessage());
+            self::assertFileDoesNotExist($path);
+        }
     }
 
     public function testRejectsVariable(): void
