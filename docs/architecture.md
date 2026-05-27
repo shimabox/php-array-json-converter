@@ -10,7 +10,13 @@ PHP Array JSON Converter は、PHP配列リテラルとJSONを相互変換する
 
 ```text
 public/index.html
-  UI / fetch / focus / copy
+  UI structure
+
+public/assets/style.css
+  UI styling
+
+public/assets/app.js
+  fetch / focus / copy
 
 public/router.php
   PHP built-in server 用の入口
@@ -50,7 +56,7 @@ GET /
   -> public/index.html
 ```
 
-`public/index.html` は静的ファイルです。PHPはHTMLを生成しません。
+`public/index.html` は静的ファイルです。CSSは `public/assets/style.css`、JavaScriptは `public/assets/app.js` に分けています。PHPはHTMLを生成しません。
 
 ### 変換API
 
@@ -59,7 +65,7 @@ POST /api/convert
 Content-Type: application/json
 ```
 
-`public/index.html` のJavaScriptが `/api/convert` にJSONを送ります。
+`public/assets/app.js` が `/api/convert` にJSONを送ります。
 
 PHP側の流れ:
 
@@ -132,6 +138,15 @@ Response:
 
 - 画面表示
 - 初期サンプル入力の保持
+
+### `public/assets/style.css`
+
+- 画面スタイル
+- レスポンシブレイアウト
+- エラー表示とcopyボタンの状態表示
+
+### `public/assets/app.js`
+
 - `/api/convert` の呼び出し
 - 変換結果の反映
 - エラー表示
@@ -194,7 +209,7 @@ PHPの値を整形済みJSON文字列へ変換します。
 
 - Node系ツールチェーンは導入していません
 - Composer依存は開発ツール中心です
-- viewは `public/index.html` として静的に分離しています
+- viewは `public/index.html`、`public/assets/style.css`、`public/assets/app.js` として静的に分離しています
 - PHP APIはフレームワークなしで小さく保っています
 
 StaticPHP / FrankenPHP で単体バイナリ化する場合も、静的ファイルとPHP APIの境界が分かれているため、組み込み対象を整理しやすい構成です。

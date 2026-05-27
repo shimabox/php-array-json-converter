@@ -1,0 +1,198 @@
+:root {
+    color-scheme: light;
+    --bg: #f4f1ea;
+    --ink: #17130f;
+    --muted: #73685c;
+    --line: #d9d0c3;
+    --accent: #0f5f6b;
+    --accent-ink: #ffffff;
+    --error-bg: #fff1ed;
+    --error-line: #d55c35;
+    --code-bg: #20201d;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    background:
+        linear-gradient(135deg, rgba(15, 95, 107, 0.08), transparent 34rem),
+        var(--bg);
+    color: var(--ink);
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+}
+
+.app-shell {
+    width: min(1180px, calc(100% - 32px));
+    margin: 0 auto;
+    padding: 32px 0;
+}
+
+.page-header {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 24px;
+    border-bottom: 2px solid var(--ink);
+    padding-bottom: 16px;
+}
+
+h1,
+h2,
+p {
+    margin: 0;
+}
+
+h1 {
+    font-size: clamp(2rem, 5vw, 4.5rem);
+    line-height: 0.95;
+    max-width: 760px;
+}
+
+.tagline {
+    max-width: 360px;
+    color: var(--muted);
+    font-size: 0.92rem;
+    line-height: 1.5;
+}
+
+.converter-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.editor-panel {
+    display: grid;
+    gap: 12px;
+    min-width: 0;
+}
+
+.panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+h2 {
+    font-size: 0.9rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+textarea {
+    width: 100%;
+    min-height: 440px;
+    resize: vertical;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--code-bg);
+    color: #f8f0df;
+    padding: 16px;
+    font: inherit;
+    line-height: 1.55;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+}
+
+.editor-body {
+    position: relative;
+}
+
+.editor-body textarea {
+    padding-top: 36px;
+}
+
+.copy-button {
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 1;
+    border: 0;
+    border-bottom: 1px solid rgba(248, 240, 223, 0.16);
+    border-left: 1px solid rgba(248, 240, 223, 0.16);
+    border-radius: 0 8px 0 8px;
+    background: #343a46;
+    color: #f8f0df;
+    font-size: 0.9rem;
+    padding: 10px 14px;
+}
+
+.copy-button:hover,
+.copy-button:focus-visible {
+    background: #424957;
+}
+
+.copy-button.is-copied {
+    background: #214f3c;
+    color: #b9f4d5;
+}
+
+textarea:focus {
+    outline: 3px solid rgba(15, 95, 107, 0.28);
+    border-color: var(--accent);
+}
+
+button {
+    border: 0;
+    border-radius: 8px;
+    background: var(--accent);
+    color: var(--accent-ink);
+    cursor: pointer;
+    font: inherit;
+    font-weight: 700;
+    padding: 10px 14px;
+}
+
+button:hover,
+button:focus-visible {
+    background: #0b4c56;
+}
+
+button:focus-visible {
+    outline: 3px solid rgba(15, 95, 107, 0.34);
+    outline-offset: 2px;
+}
+
+.error {
+    margin-bottom: 16px;
+    border: 1px solid var(--error-line);
+    border-left-width: 6px;
+    border-radius: 8px;
+    background: var(--error-bg);
+    padding: 14px 16px;
+}
+
+.error[hidden] {
+    display: none;
+}
+
+.error h2 {
+    color: #9f3517;
+    margin-bottom: 6px;
+}
+
+@media (max-width: 820px) {
+    .app-shell {
+        width: min(100% - 20px, 1180px);
+        padding: 20px 0;
+    }
+
+    .page-header,
+    .converter-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .page-header {
+        display: grid;
+        align-items: start;
+    }
+
+    textarea {
+        min-height: 320px;
+    }
+}
