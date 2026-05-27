@@ -192,13 +192,61 @@ final class ArrayLiteralParser
 
     private function parseString(string $literal): string
     {
-        if ($literal[0] !== "'") {
-            throw new ConversionError('Unsupported PHP syntax: double-quoted strings are not supported yet.');
+        if ($literal[0] === "'") {
+            return $this->parseSingleQuotedString($literal);
         }
 
+        if ($literal[0] === '"') {
+            return $this->parseDoubleQuotedString($literal);
+        }
+
+        throw new ConversionError('Unsupported PHP syntax: unsupported string literal.');
+    }
+
+    private function parseSingleQuotedString(string $literal): string
+    {
         $body = substr($literal, 1, -1);
 
         return str_replace(['\\\\', "\\'"], ['\\', "'"], $body);
+    }
+
+    private function parseDoubleQuotedString(string $literal): string
+    {
+        $body = substr($literal, 1, -1);
+        $result = '';
+        $length = strlen($body);
+
+        for ($index = 0; $index < $length; $index++) {
+            $char = $body[$index];
+
+            if ($char !== '\\') {
+                $result .= $char;
+                continue;
+            }
+
+            $index++;
+
+            if ($index >= $length) {
+                throw new ConversionError('Unsupported PHP syntax: invalid escape sequence in double-quoted string.');
+            }
+
+            $result .= match ($body[$index]) {
+                'n' => "\n",
+                'r' => "\r",
+                't' => "\t",
+                'v' => "\v",
+                'e' => "\x1B",
+                'f' => "\f",
+                '\\' => '\\',
+                '$' => '$',
+                '"' => '"',
+                default => throw new ConversionError(
+                    'Unsupported PHP syntax: unsupported escape sequence \\' . $body[$index] . ' in double-quoted string.',
+                ),
+            };
+        }
+
+        return $result;
     }
 
     private function consume(int|string $expected): Token

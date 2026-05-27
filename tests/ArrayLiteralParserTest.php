@@ -97,6 +97,29 @@ PHP);
         ], $actual);
     }
 
+    public function testParsesDoubleQuotedStringWithoutInterpolation(): void
+    {
+        $parser = new ArrayLiteralParser();
+
+        $actual = $parser->parse(<<<'PHP'
+[
+    "name" => "shimabox",
+    "quote" => "say \"hello\"",
+    "line" => "first\nsecond",
+    "slash" => "C:\\temp",
+    "dollar" => "\$name",
+]
+PHP);
+
+        self::assertSame([
+            'name' => 'shimabox',
+            'quote' => 'say "hello"',
+            'line' => "first\nsecond",
+            'slash' => 'C:\temp',
+            'dollar' => '$name',
+        ], $actual);
+    }
+
     public function testParsesImplicitIndexAfterExplicitIntegerKeyLikePhp(): void
     {
         $parser = new ArrayLiteralParser();
@@ -234,14 +257,24 @@ PHP);
         $parser->parse("['name' => 'shimabox']; ['extra']");
     }
 
-    public function testRejectsDoubleQuotedString(): void
+    public function testRejectsDoubleQuotedStringWithVariableInterpolation(): void
     {
         $parser = new ArrayLiteralParser();
 
         $this->expectException(ConversionError::class);
-        $this->expectExceptionMessage('double-quoted strings are not supported yet');
+        $this->expectExceptionMessage('Unsupported PHP syntax');
 
-        $parser->parse('["name" => "shimabox"]');
+        $parser->parse('["name" => "$name"]');
+    }
+
+    public function testRejectsDoubleQuotedStringWithBracedVariableInterpolation(): void
+    {
+        $parser = new ArrayLiteralParser();
+
+        $this->expectException(ConversionError::class);
+        $this->expectExceptionMessage('Unsupported PHP syntax');
+
+        $parser->parse('["name" => "{$name}"]');
     }
 
     public function testRejectsClassConstant(): void
