@@ -8,7 +8,6 @@
         :root {
             color-scheme: light;
             --bg: #f4f1ea;
-            --panel: #fffdf8;
             --ink: #17130f;
             --muted: #73685c;
             --line: #d9d0c3;
@@ -175,7 +174,7 @@
             padding: 14px 16px;
         }
 
-        .error:has(p:empty) {
+        .error[hidden] {
             display: none;
         }
 
@@ -213,52 +212,156 @@
             <p class="tagline">Paste a PHP array literal or JSON document. Conversion runs locally and never executes PHP input.</p>
         </header>
 
-        <section class="error" role="alert">
+        <section class="error" role="alert" hidden>
             <h2>Error</h2>
-            <p>{{ error }}</p>
+            <p id="error-message"></p>
         </section>
 
-        <form method="post" action="/" class="converter-grid">
+        <form class="converter-grid">
             <section class="editor-panel">
                 <div class="panel-header">
                     <h2>PHP Array</h2>
-                    <button type="submit" name="mode" value="php_to_json" formaction="/#focus-json">Array &rarr; JSON</button>
+                    <button type="button" id="array-to-json">Array &rarr; JSON</button>
                 </div>
                 <div class="editor-body">
                     <button type="button" class="copy-button" data-copy-target="php-array-input">Copy</button>
-                    <textarea id="php-array-input" name="php_array" rows="20" cols="60" spellcheck="false">{{ php_array }}</textarea>
+                    <textarea id="php-array-input" name="php_array" rows="20" cols="60" spellcheck="false">[
+    'project' =&gt; 'php-array-json-converter',
+    'version' =&gt; 1,
+    'active' =&gt; true,
+    'owner' =&gt; [
+        'name' =&gt; 'shimabox',
+        'location' =&gt; 'Chiba',
+        'roles' =&gt; [
+            'developer',
+            'maintainer',
+        ],
+    ],
+    'features' =&gt; [
+        [
+            'name' =&gt; 'array_to_json',
+            'enabled' =&gt; true,
+            'limits' =&gt; [
+                'supports_nested_arrays' =&gt; true,
+                'supports_eval' =&gt; false,
+                'max_depth' =&gt; null,
+            ],
+        ],
+        [
+            'name' =&gt; 'json_to_array',
+            'enabled' =&gt; true,
+            'formats' =&gt; [
+                'pretty',
+                'short_array_syntax',
+            ],
+        ],
+    ],
+    'sample_values' =&gt; [
+        'string' =&gt; 'hello',
+        'integer' =&gt; 123,
+        'float' =&gt; 12.34,
+        'boolean' =&gt; false,
+        'null_value' =&gt; null,
+        'unicode' =&gt; 'こんにちは',
+        'escaped' =&gt; 'quote: " double, slash: \\',
+    ],
+    'matrix' =&gt; [
+        [
+            1,
+            2,
+            3,
+        ],
+        [
+            4,
+            5,
+            6,
+        ],
+        [
+            7,
+            8,
+            9,
+        ],
+    ],
+    'metadata' =&gt; [
+        'created_at' =&gt; '2026-05-26T22:30:00+09:00',
+        'tags' =&gt; [
+            'php',
+            'json',
+            'converter',
+            'local-tool',
+        ],
+    ],
+]</textarea>
                 </div>
             </section>
             <section class="editor-panel">
                 <div class="panel-header">
                     <h2>JSON</h2>
-                    <button type="submit" name="mode" value="json_to_php" formaction="/#focus-php-array">JSON &rarr; Array</button>
+                    <button type="button" id="json-to-array">JSON &rarr; Array</button>
                 </div>
                 <div class="editor-body">
                     <button type="button" class="copy-button" data-copy-target="json-input">Copy</button>
-                    <textarea id="json-input" name="json" rows="20" cols="60" spellcheck="false">{{ json }}</textarea>
+                    <textarea id="json-input" name="json" rows="20" cols="60" spellcheck="false"></textarea>
                 </div>
             </section>
         </form>
     </main>
     <script>
-        const conversionFocusTargets = {
-            '#focus-json': 'json-input',
-            '#focus-php-array': 'php-array-input',
-        };
-        const errorMessage = document.querySelector('.error p');
-        const hasConversionError = errorMessage instanceof HTMLElement && errorMessage.textContent.trim() !== '';
-        const focusTargetId = conversionFocusTargets[window.location.hash];
+        const phpArrayInput = document.getElementById('php-array-input');
+        const jsonInput = document.getElementById('json-input');
+        const errorPanel = document.querySelector('.error');
+        const errorMessage = document.getElementById('error-message');
 
-        if (focusTargetId) {
-            window.history.replaceState(null, '', window.location.pathname + window.location.search);
+        function setError(message) {
+            errorMessage.textContent = message;
+            errorPanel.hidden = message === '';
         }
 
-        const focusTarget = hasConversionError || !focusTargetId ? null : document.getElementById(focusTargetId);
+        async function convert(payload) {
+            const response = await fetch('/api/convert', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(payload),
+            });
 
-        if (focusTarget instanceof HTMLTextAreaElement) {
-            focusTarget.focus();
+            return response.json();
         }
+
+        function applyConversionResult(result) {
+            phpArrayInput.value = result.php_array ?? phpArrayInput.value;
+            jsonInput.value = result.json ?? jsonInput.value;
+            setError(result.error ?? '');
+        }
+
+        async function runConversion(payload, focusTarget) {
+            try {
+                const result = await convert(payload);
+
+                applyConversionResult(result);
+
+                if (!result.error) {
+                    focusTarget.focus();
+                }
+            } catch (error) {
+                setError('Conversion request failed.');
+            }
+        }
+
+        document.getElementById('array-to-json').addEventListener('click', () => {
+            runConversion({
+                mode: 'array_to_json',
+                php_array: phpArrayInput.value,
+            }, jsonInput);
+        });
+
+        document.getElementById('json-to-array').addEventListener('click', () => {
+            runConversion({
+                mode: 'json_to_array',
+                json: jsonInput.value,
+            }, phpArrayInput);
+        });
 
         document.querySelectorAll('[data-copy-target]').forEach((button) => {
             button.addEventListener('click', async () => {

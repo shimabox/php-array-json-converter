@@ -9,42 +9,16 @@ use PHPUnit\Framework\TestCase;
 
 final class ApplicationTest extends TestCase
 {
-    public function testHomeRendersConverterUi(): void
-    {
-        $app = new Application();
-
-        $response = $app->handle('GET', '/');
-
-        self::assertSame(200, $response->statusCode);
-        self::assertStringContainsString('PHP Array JSON Converter', $response->body);
-        self::assertStringContainsString('name="php_array"', $response->body);
-        self::assertStringContainsString('name="json"', $response->body);
-        self::assertStringContainsString('Array &rarr; JSON', $response->body);
-        self::assertStringContainsString('JSON &rarr; Array', $response->body);
-        self::assertStringContainsString('formaction="/#focus-json"', $response->body);
-        self::assertStringContainsString('formaction="/#focus-php-array"', $response->body);
-        self::assertStringContainsString('class="app-shell"', $response->body);
-        self::assertStringContainsString('class="converter-grid"', $response->body);
-        self::assertStringContainsString('class="editor-panel"', $response->body);
-        self::assertStringContainsString('data-copy-target="php-array-input"', $response->body);
-        self::assertStringContainsString('data-copy-target="json-input"', $response->body);
-        self::assertStringContainsString('id="php-array-input"', $response->body);
-        self::assertStringContainsString('id="json-input"', $response->body);
-        self::assertStringContainsString('php-array-json-converter', $response->body);
-        self::assertStringContainsString('Chiba', $response->body);
-        self::assertStringContainsString('quote: &quot; double, slash: \\', $response->body);
-    }
-
     public function testConvertsJsonToArrayLiteral(): void
     {
         $app = new Application();
 
-        $response = $app->handle('POST', '/', [
-            'mode' => 'json_to_php',
+        $response = $app->handle('POST', '/api/convert', json_encode([
+            'mode' => 'json_to_array',
             'json' => '{"name":"shimabox","skills":["PHP","Go"]}',
-        ]);
+        ], JSON_THROW_ON_ERROR));
+        $payload = $this->decodeJson($response->body);
 
-        self::assertSame(200, $response->statusCode);
         $expected = <<<'PHP'
 [
     'name' => 'shimabox',
@@ -55,44 +29,38 @@ final class ApplicationTest extends TestCase
 ]
 PHP;
 
-        self::assertStringContainsString(
-            htmlspecialchars($expected, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
-            $response->body,
-        );
-        self::assertStringNotContainsString('focus_target', $response->body);
-        self::assertStringNotContainsString('data-focus-target', $response->body);
-        self::assertStringNotContainsString('sessionStorage', $response->body);
-        self::assertStringNotContainsString('autofocus', $response->body);
+        self::assertSame(200, $response->statusCode);
+        self::assertSame($expected, $payload['php_array']);
+        self::assertSame('{"name":"shimabox","skills":["PHP","Go"]}', $payload['json']);
+        self::assertNull($payload['error']);
     }
 
     public function testShowsJsonParseError(): void
     {
         $app = new Application();
 
-        $response = $app->handle('POST', '/', [
-            'mode' => 'json_to_php',
+        $response = $app->handle('POST', '/api/convert', json_encode([
+            'mode' => 'json_to_array',
             'json' => '{"name":',
-        ]);
+        ], JSON_THROW_ON_ERROR));
+        $payload = $this->decodeJson($response->body);
 
-        self::assertSame(200, $response->statusCode);
-        self::assertStringContainsString('JSON parse error:', $response->body);
-        self::assertStringContainsString('role="alert"', $response->body);
-        self::assertLessThan(
-            strpos($response->body, '<form'),
-            strpos($response->body, 'role="alert"'),
-        );
+        self::assertSame(422, $response->statusCode);
+        self::assertSame('', $payload['php_array']);
+        self::assertSame('{"name":', $payload['json']);
+        self::assertIsString($payload['error']);
+        self::assertStringContainsString('JSON parse error:', $payload['error']);
     }
 
     public function testConvertsArrayLiteralToJson(): void
     {
         $app = new Application();
 
-        $response = $app->handle('POST', '/', [
-            'mode' => 'php_to_json',
+        $response = $app->handle('POST', '/api/convert', json_encode([
+            'mode' => 'array_to_json',
             'php_array' => "['name' => 'shimabox', 'skills' => ['PHP', 'Go']]",
-        ]);
-
-        self::assertSame(200, $response->statusCode);
+        ], JSON_THROW_ON_ERROR));
+        $payload = $this->decodeJson($response->body);
 
         $expected = <<<'JSON'
 {
@@ -104,23 +72,75 @@ PHP;
 }
 JSON;
 
-        self::assertStringContainsString(
-            htmlspecialchars($expected, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'),
-            $response->body,
-        );
-        self::assertStringNotContainsString('focus_target', $response->body);
-        self::assertStringNotContainsString('data-focus-target', $response->body);
-        self::assertStringNotContainsString('sessionStorage', $response->body);
-        self::assertStringNotContainsString('autofocus', $response->body);
+        self::assertSame(200, $response->statusCode);
+        self::assertSame("['name' => 'shimabox', 'skills' => ['PHP', 'Go']]", $payload['php_array']);
+        self::assertSame($expected, $payload['json']);
+        self::assertNull($payload['error']);
     }
 
-    public function testConvertPathRendersHomeToAvoidNotFoundAfterReload(): void
+    public function testShowsArrayParseError(): void
     {
         $app = new Application();
 
-        $response = $app->handle('GET', '/convert');
+        $response = $app->handle('POST', '/api/convert', json_encode([
+            'mode' => 'array_to_json',
+            'php_array' => "['name' => getenv('USER')]",
+        ], JSON_THROW_ON_ERROR));
+        $payload = $this->decodeJson($response->body);
 
-        self::assertSame(200, $response->statusCode);
-        self::assertStringContainsString('PHP Array JSON Converter', $response->body);
+        self::assertSame(422, $response->statusCode);
+        self::assertSame("['name' => getenv('USER')]", $payload['php_array']);
+        self::assertSame('', $payload['json']);
+        self::assertIsString($payload['error']);
+        self::assertStringContainsString('Unsupported PHP syntax', $payload['error']);
     }
+
+    public function testRejectsInvalidJsonRequest(): void
+    {
+        $app = new Application();
+
+        $response = $app->handle('POST', '/api/convert', '{"mode":');
+        $payload = $this->decodeJson($response->body);
+
+        self::assertSame(400, $response->statusCode);
+        self::assertIsString($payload['error']);
+        self::assertStringContainsString('Invalid JSON request:', $payload['error']);
+    }
+
+    public function testRejectsUnknownMode(): void
+    {
+        $app = new Application();
+
+        $response = $app->handle('POST', '/api/convert', json_encode([
+            'mode' => 'unknown',
+        ], JSON_THROW_ON_ERROR));
+        $payload = $this->decodeJson($response->body);
+
+        self::assertSame(400, $response->statusCode);
+        self::assertSame('Unknown conversion mode.', $payload['error']);
+    }
+
+    public function testReturnsNotFoundForUnknownApiPath(): void
+    {
+        $app = new Application();
+
+        $response = $app->handle('GET', '/api/missing');
+        $payload = $this->decodeJson($response->body);
+
+        self::assertSame(404, $response->statusCode);
+        self::assertSame('Not Found', $payload['error']);
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function decodeJson(string $json): array
+    {
+        $payload = json_decode($json, true, flags: JSON_THROW_ON_ERROR);
+        self::assertIsArray($payload);
+
+        /** @var array<string, mixed> $payload */
+        return $payload;
+    }
+
 }
