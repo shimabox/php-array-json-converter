@@ -56,17 +56,19 @@ final class ConvertController
     private function decodeJsonObject(string $body): array
     {
         try {
-            $value = json_decode($body, true, flags: JSON_THROW_ON_ERROR);
+            $value = json_decode($body, false, flags: JSON_THROW_ON_ERROR);
         } catch (\JsonException $error) {
             throw new ConversionError('Invalid JSON request: ' . $error->getMessage(), previous: $error);
         }
 
-        if (!is_array($value)) {
+        if (!$value instanceof \stdClass) {
             throw new ConversionError('Invalid JSON request: request body must be a JSON object.');
         }
 
-        /** @var array<string, mixed> $value */
-        return $value;
+        $request = get_object_vars($value);
+
+        /** @var array<string, mixed> $request */
+        return $request;
     }
 
     private function stringValue(mixed $value): string

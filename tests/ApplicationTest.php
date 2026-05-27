@@ -32,6 +32,18 @@ final class ApplicationTest extends TestCase
         $payload = $this->decodeJson($response->body);
 
         self::assertSame(404, $response->statusCode);
+        self::assertSame('application/json; charset=utf-8', $response->headers['Content-Type']);
+        self::assertSame('Not Found', $payload['error']);
+    }
+
+    public function testReturnsNotFoundWhenConvertApiMethodDoesNotMatch(): void
+    {
+        $app = new Application();
+
+        $response = $app->handle('GET', '/api/convert');
+        $payload = $this->decodeJson($response->body);
+
+        self::assertSame(404, $response->statusCode);
         self::assertSame('Not Found', $payload['error']);
     }
 

@@ -107,6 +107,28 @@ JSON;
         self::assertStringContainsString('Invalid JSON request:', $payload['error']);
     }
 
+    public function testRejectsJsonArrayRequest(): void
+    {
+        $controller = new ConvertController();
+
+        $response = $controller->convert('[]');
+        $payload = $this->decodeJson($response->body);
+
+        self::assertSame(400, $response->statusCode);
+        self::assertSame('Invalid JSON request: request body must be a JSON object.', $payload['error']);
+    }
+
+    public function testRejectsJsonScalarRequest(): void
+    {
+        $controller = new ConvertController();
+
+        $response = $controller->convert('"array_to_json"');
+        $payload = $this->decodeJson($response->body);
+
+        self::assertSame(400, $response->statusCode);
+        self::assertSame('Invalid JSON request: request body must be a JSON object.', $payload['error']);
+    }
+
     public function testRejectsUnknownMode(): void
     {
         $controller = new ConvertController();
