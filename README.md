@@ -13,6 +13,8 @@ Repository / package name: `php-array-json-converter`
 
 PHP側は変換APIだけを担当し、画面は `public/index.html` の静的ファイルとして分けています。
 
+設計の詳細は [docs/architecture.md](docs/architecture.md) にまとめています。
+
 ## セットアップ
 
 依存関係をインストールします。
@@ -34,6 +36,8 @@ docker compose up app
 ```text
 http://localhost:8080
 ```
+
+`public/index.html` は静的ファイルとして配信され、`/api/*` だけ `public/router.php` からPHPアプリケーションへ渡します。
 
 ## 開発コマンド
 
@@ -95,6 +99,16 @@ PHP配列リテラルからJSON:
 }
 ```
 
+成功レスポンス:
+
+```json
+{
+    "php_array": "['name' => 'shimabox']",
+    "json": "{\n    \"name\": \"shimabox\"\n}",
+    "error": null
+}
+```
+
 JSONからPHP配列リテラル:
 
 ```json
@@ -104,7 +118,42 @@ JSONからPHP配列リテラル:
 }
 ```
 
+成功レスポンス:
+
+```json
+{
+    "php_array": "[\n    'name' => 'shimabox',\n]",
+    "json": "{\"name\":\"shimabox\"}",
+    "error": null
+}
+```
+
 成功時は `200`、変換エラー時は `422`、リクエスト形式エラー時は `400` を返します。
+
+## 構成
+
+```text
+public/index.html
+  UI / fetch / focus / copy
+
+public/router.php
+  PHP built-in server 用の入口
+  /api/* だけ PHP アプリケーションへ渡す
+
+src/Application.php
+  HTTP method + path の dispatch
+
+src/Controller/ConvertController.php
+  JSON request を読み、Converter を呼び、JSON response を返す
+
+src/Converter.php
+  HTTP を知らない変換ユースケース
+
+src/ArrayLiteralParser.php
+src/ArrayLiteralFormatter.php
+src/JsonFormatter.php
+  変換ロジックの低レベル部品
+```
 
 ## 変換例
 
@@ -193,11 +242,12 @@ JSON:
 
 ## 設計方針
 
-初期版は小さく保ちます。
+アプリケーションは小さく保ちます。
 
 - フレームワークは使わない
 - 外部APIは使わない
 - PHPは変換APIに集中させ、viewは静的HTMLとして分ける
+- ルーティングライブラリは、APIが増えるまで導入しない
 - DBは使わない
 - `.env` は使わない
 - ユーザー入力をPHPコードとして実行しない
