@@ -22,6 +22,8 @@ static-build.Dockerfile
   Linux向けstatic binaryのbuild定義
 ```
 
+生成物は `dist/` に置きます。`dist/` はGit管理しません。
+
 ## 通常の動作確認
 
 開発中はこれまで通りDocker Composeで確認します。
@@ -66,8 +68,28 @@ chmod +x php-array-json-converter
 
 `php-server` は、埋め込まれたアプリケーションと `Caddyfile` を使ってWeb UIを起動します。
 
+## macOS向けstatic binaryのbuild
+
+macOS向けバイナリは、macOS上でネイティブbuildします。Linux Docker builderからmacOSバイナリは作りません。
+
+GitHub Actionsの `Static Binary` workflowを手動実行すると、Linux x86_64とmacOS向けバイナリをartifactとして生成します。
+
+macOS artifactを取得したら、実行権限を付けて起動します。
+
+```bash
+chmod +x php-array-json-converter-macos-arm64
+./php-array-json-converter-macos-arm64 php-server
+```
+
+ブラウザで開きます。
+
+```text
+http://localhost:8080
+```
+
 ## 注意点
 
 - `vendor/` はバイナリに含める必要があります。`static-build.Dockerfile` ではbuild用stageでproduction依存をインストールしてから埋め込みます。
 - static binaryではPHP拡張をあとから動的ロードできません。現時点ではPHP拡張として `tokenizer` をbuild時に含めます。`json` はPHP 8では組み込みのため、拡張指定からは外しています。
+- macOS向けバイナリはmacOS runnerでbuildします。DockerによるLinux向けbuildとは別系統です。
 - 現時点のアプリはComposer依存が開発ツールのみなので、runtimeの依存は最小です。

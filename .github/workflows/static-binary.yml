@@ -1,0 +1,85 @@
+name: Static Binary
+
+on:
+  workflow_dispatch:
+
+jobs:
+  linux:
+    name: Build Linux x86_64
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build
+        run: docker build -t php-array-json-converter-static -f static-build.Dockerfile .
+
+      - name: Extract Binary
+        run: |
+          mkdir -p dist
+          container_id="$(docker create php-array-json-converter-static)"
+          docker cp "${container_id}:/go/src/app/dist/frankenphp-linux-x86_64" dist/php-array-json-converter-linux-x86_64
+          docker rm "${container_id}"
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: php-array-json-converter-linux-x86_64
+          path: dist/php-array-json-converter-linux-x86_64
+
+  macos:
+    name: Build macOS
+    runs-on: macos-14
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.5'
+          extensions: tokenizer
+          coverage: none
+
+      - name: Prepare App
+        run: |
+          mkdir -p build/app dist
+          cp composer.json composer.lock Caddyfile build/app/
+          cp -R src public build/app/
+          composer install \
+            --working-dir=build/app \
+            --ignore-platform-reqs \
+            --no-dev \
+            --no-interaction \
+            --no-progress \
+            --prefer-dist \
+            --classmap-authoritative
+
+      - name: Checkout FrankenPHP
+        run: git clone --depth 1 --branch v1.12.3 https://github.com/dunglas/frankenphp.git build/frankenphp
+
+      - name: Build
+        working-directory: build/frankenphp
+        run: |
+          PHP_EXTENSIONS=tokenizer \
+          PHP_EXTENSION_LIBS=watcher \
+          SPC_CMD_VAR_FRANKENPHP_XCADDY_MODULES=" " \
+          EMBED="${GITHUB_WORKSPACE}/build/app" \
+          ./build-static.sh
+
+      - name: Collect Binary
+        run: |
+          arch="$(uname -m)"
+          if [ "${arch}" = "arm64" ]; then
+            cp build/frankenphp/dist/frankenphp-mac-arm64 dist/php-array-json-converter-macos-arm64
+          else
+            cp build/frankenphp/dist/frankenphp-mac-x86_64 dist/php-array-json-converter-macos-x86_64
+          fi
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: php-array-json-converter-macos
+          path: dist/php-array-json-converter-macos-*
