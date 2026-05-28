@@ -87,9 +87,24 @@ chmod +x php-array-json-converter-macos-arm64
 http://localhost:8080
 ```
 
+### Gatekeeperでブロックされる場合
+
+GitHub Actions artifactをブラウザからダウンロードすると、macOSのquarantine属性が付くことがあります。未署名・未notarizeのバイナリなので、初回起動時に「開いていません」と表示される場合があります。
+
+ローカルで信頼できる自分のbuild artifactとして実行する場合は、quarantine属性を削除してから起動します。
+
+```bash
+xattr -d com.apple.quarantine php-array-json-converter-macos-arm64
+chmod +x php-array-json-converter-macos-arm64
+./php-array-json-converter-macos-arm64 php-server
+```
+
+一般配布する場合は、この回避ではなくApple Developer IDでのcode signingとnotarizationを行います。
+
 ## 注意点
 
 - `vendor/` はバイナリに含める必要があります。`static-build.Dockerfile` ではbuild用stageでproduction依存をインストールしてから埋め込みます。
 - static binaryではPHP拡張をあとから動的ロードできません。現時点ではPHP拡張として `tokenizer` をbuild時に含めます。`json` はPHP 8では組み込みのため、拡張指定からは外しています。
 - macOS向けバイナリはmacOS runnerでbuildします。DockerによるLinux向けbuildとは別系統です。
+- macOS向けバイナリは現時点では未署名・未notarizeです。
 - 現時点のアプリはComposer依存が開発ツールのみなので、runtimeの依存は最小です。
