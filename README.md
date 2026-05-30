@@ -9,14 +9,10 @@ Repository / package name: `php-array-json-converter`
 
 ## ダウンロード
 
-[Static Binary workflow](https://github.com/shimabox/php-array-json-converter/actions/workflows/static-binary.yml) で生成したartifactを使います。
+[Releases](https://github.com/shimabox/php-array-json-converter/releases) から環境に合うバイナリをダウンロードします。
 
-GitHubにログインした状態で workflow の最新実行結果を開き、`Artifacts` から環境に合うファイルをダウンロードします。
-
-- macOS: `php-array-json-converter-macos`
+- macOS arm64: `php-array-json-converter-macos-arm64`
 - Linux: `php-array-json-converter-linux-x86_64`
-
-GitHub Actions artifactは保存期限があります。安定した配布が必要になったら、GitHub Releasesに切り替えます。
 
 ## 起動方法
 
@@ -45,11 +41,11 @@ chmod +x php-array-json-converter-linux-x86_64
 
 ## 対応状況
 
-- macOS arm64 artifactは動作確認済みです。
-- Linux x86_64 artifactは、macOS上の `linux/amd64` Ubuntu 24.04コンテナで起動確認済みです。
-- Windows native binaryはまだ生成していません。Windowsで確認する場合は、WSL2上でLinux x86_64 artifactを使います。
+- macOS arm64バイナリは動作確認済みです。
+- Linux x86_64バイナリは、macOS上の `linux/amd64` Ubuntu 24.04コンテナで起動確認済みです。
+- Windows native binaryはまだ生成していません。Windowsで確認する場合は、WSL2上でLinux x86_64バイナリを使います。
 
-macOS上でLinux artifactだけ確認したい場合:
+macOS上でLinuxバイナリだけ確認したい場合は、DockerでLinuxコンテナ内から起動します。
 
 ```bash
 chmod +x php-array-json-converter-linux-x86_64
@@ -117,3 +113,12 @@ test
 ```
 
 GitHub Actionsでも、pushとpull requestに対して `composer validate --strict` と `composer ci` を実行します。
+
+## リリース
+
+`v*` 形式のtagをpushすると、GitHub Actionsの `Static Binary` workflowがLinux x86_64 / macOS arm64向けバイナリをbuildし、GitHub Releaseを作成してassetsとして添付します。
+
+```bash
+git tag v0.1.0
+git push origin v0.1.0
+```

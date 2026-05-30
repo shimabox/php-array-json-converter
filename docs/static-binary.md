@@ -106,7 +106,14 @@ macOS向けバイナリは、macOS上でネイティブbuildします。Linux Do
 
 GitHub Actionsの `Static Binary` workflowを手動実行すると、Linux x86_64とmacOS向けバイナリをartifactとして生成します。
 
-macOS artifactを取得したら、実行権限を付けて起動します。
+`v*` 形式のtagをpushした場合は、同じworkflowでGitHub Releaseを作成し、生成したバイナリをRelease assetsとして添付します。
+
+```bash
+git tag v0.1.0
+git push origin v0.1.0
+```
+
+macOSバイナリを取得したら、実行権限を付けて起動します。
 
 ```bash
 chmod +x php-array-json-converter-macos-arm64
@@ -121,7 +128,7 @@ http://localhost:8080
 
 ### Gatekeeperでブロックされる場合
 
-GitHub Actions artifactをブラウザからダウンロードすると、macOSのquarantine属性が付くことがあります。未署名・未notarizeのバイナリなので、初回起動時に「開いていません」と表示される場合があります。
+GitHub Actions artifactやGitHub Releasesからブラウザでダウンロードすると、macOSのquarantine属性が付くことがあります。未署名・未notarizeのバイナリなので、初回起動時に「開いていません」と表示される場合があります。
 
 ローカルで信頼できる自分のbuild artifactとして実行する場合は、quarantine属性を削除してから起動します。
 
