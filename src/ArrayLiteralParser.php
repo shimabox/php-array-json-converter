@@ -6,6 +6,8 @@ namespace PhpArrayJsonConverter;
 
 final class ArrayLiteralParser
 {
+    private const int MAX_DEPTH = 128;
+
     /** @var list<Token> */
     private array $tokens = [];
 
@@ -22,7 +24,7 @@ final class ArrayLiteralParser
             throw new ConversionError('Unsupported PHP syntax: root value must be a short array literal.');
         }
 
-        $value = $this->parseArray();
+        $value = $this->parseArray(0);
         $this->consumeIf(';');
 
         if (!$this->isEnd()) {
@@ -68,22 +70,26 @@ final class ArrayLiteralParser
     /**
      * @return array<array-key, mixed>
      */
-    private function parseArray(): array
+    private function parseArray(int $depth): array
     {
+        if ($depth >= self::MAX_DEPTH) {
+            throw new ConversionError('PHP array parse error: maximum array depth exceeded.');
+        }
+
         $this->consume('[');
 
         $items = [];
         $nextIntegerKey = null;
 
         while (!$this->consumeIf(']')) {
-            $first = $this->parseValue();
+            $first = $this->parseValue($depth);
 
             if ($this->consumeIf(T_DOUBLE_ARROW)) {
                 if (!is_int($first) && !is_string($first)) {
                     throw new ConversionError('PHP array parse error: array key must be string or int.');
                 }
 
-                $items[$first] = $this->parseValue();
+                $items[$first] = $this->parseValue($depth);
 
                 if (is_int($first)) {
                     $nextIntegerKey = $this->advanceNextIntegerKey($nextIntegerKey, $first);
@@ -91,7 +97,7 @@ final class ArrayLiteralParser
             } else {
                 $key = $nextIntegerKey ?? 0;
                 $items[$key] = $first;
-                $nextIntegerKey = $key + 1;
+                $nextIntegerKey = $this->advanceNextIntegerKey($nextIntegerKey, $key);
             }
 
             if ($this->consumeIf(']')) {
@@ -115,13 +121,17 @@ final class ArrayLiteralParser
     private function advanceNextIntegerKey(?int $nextIntegerKey, int $usedKey): int
     {
         if ($nextIntegerKey === null || $usedKey >= $nextIntegerKey) {
+            if ($usedKey === PHP_INT_MAX) {
+                throw new ConversionError('PHP array parse error: integer key is too large.');
+            }
+
             return $usedKey + 1;
         }
 
         return $nextIntegerKey;
     }
 
-    private function parseValue(): mixed
+    private function parseValue(int $depth): mixed
     {
         $token = $this->current();
 
@@ -130,7 +140,7 @@ final class ArrayLiteralParser
         }
 
         if ($token->matches('[')) {
-            return $this->parseArray();
+            return $this->parseArray($depth + 1);
         }
 
         if ($token->id === T_CONSTANT_ENCAPSED_STRING) {
@@ -142,7 +152,7 @@ final class ArrayLiteralParser
         if ($token->id === T_LNUMBER) {
             $this->position++;
 
-            return (int) $token->text;
+            return $this->parseIntegerLiteral($token->text);
         }
 
         if ($token->id === T_DNUMBER) {
@@ -178,7 +188,7 @@ final class ArrayLiteralParser
         if ($token?->id === T_LNUMBER) {
             $this->position++;
 
-            return -(int) $token->text;
+            return -$this->parseIntegerLiteral($token->text);
         }
 
         if ($token?->id === T_DNUMBER) {
@@ -188,6 +198,21 @@ final class ArrayLiteralParser
         }
 
         throw new ConversionError('Unsupported PHP syntax: unexpected token ' . $this->describe($token) . '.');
+    }
+
+    private function parseIntegerLiteral(string $literal): int
+    {
+        if (!preg_match('/^[0-9]+$/', $literal)) {
+            throw new ConversionError('Unsupported PHP syntax: unsupported integer literal.');
+        }
+
+        $value = filter_var($literal, FILTER_VALIDATE_INT);
+
+        if ($value === false) {
+            throw new ConversionError('Unsupported PHP syntax: integer literal is too large.');
+        }
+
+        return $value;
     }
 
     private function parseString(string $literal): string

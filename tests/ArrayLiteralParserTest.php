@@ -160,6 +160,46 @@ PHP);
         ], $actual);
     }
 
+    public function testThrowsConversionErrorOnIntegerKeyOverflow(): void
+    {
+        $parser = new ArrayLiteralParser();
+
+        $this->expectException(ConversionError::class);
+        $this->expectExceptionMessage('integer key is too large');
+
+        $parser->parse('[' . PHP_INT_MAX . " => 'max', 'next']");
+    }
+
+    public function testRejectsUnsupportedIntegerLiteralFormats(): void
+    {
+        $parser = new ArrayLiteralParser();
+
+        $this->expectException(ConversionError::class);
+        $this->expectExceptionMessage('unsupported integer literal');
+
+        $parser->parse('[0x10]');
+    }
+
+    public function testRejectsIntegerLiteralWithUnderscore(): void
+    {
+        $parser = new ArrayLiteralParser();
+
+        $this->expectException(ConversionError::class);
+        $this->expectExceptionMessage('unsupported integer literal');
+
+        $parser->parse('[1_000]');
+    }
+
+    public function testThrowsConversionErrorWhenArrayDepthLimitIsExceeded(): void
+    {
+        $parser = new ArrayLiteralParser();
+
+        $this->expectException(ConversionError::class);
+        $this->expectExceptionMessage('maximum array depth exceeded');
+
+        $parser->parse(str_repeat('[', 129) . str_repeat(']', 129));
+    }
+
     public function testParsesDeeplyNestedArrayLiteral(): void
     {
         $parser = new ArrayLiteralParser();
