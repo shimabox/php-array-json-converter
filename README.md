@@ -15,7 +15,7 @@ Repository / package name: `php-array-json-converter`
 docker compose run --rm app composer install
 ```
 
-## 起動
+## Dockerで起動
 
 Dockerで起動します。
 
@@ -27,6 +27,31 @@ docker compose up app
 
 ```text
 http://localhost:8080
+```
+
+## 単体バイナリで起動
+
+GitHub Actionsの `Static Binary` workflowで生成したartifactを使います。
+
+macOS arm64:
+
+```bash
+xattr -d com.apple.quarantine php-array-json-converter-macos-arm64
+chmod +x php-array-json-converter-macos-arm64
+./php-array-json-converter-macos-arm64 php-server
+```
+
+Linux x86_64:
+
+```bash
+chmod +x php-array-json-converter-linux-x86_64
+./php-array-json-converter-linux-x86_64 php-server
+```
+
+`8080` が使われている場合は、別ポートで起動します。
+
+```bash
+./php-array-json-converter-macos-arm64 php-server --listen :8081
 ```
 
 ## 開発コマンド

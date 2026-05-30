@@ -101,6 +101,14 @@ chmod +x php-array-json-converter-macos-arm64
 
 一般配布する場合は、この回避ではなくApple Developer IDでのcode signingとnotarizationを行います。
 
+## macOS配布の今後
+
+現時点のmacOS artifactは、開発者本人またはprivate repositoryの利用者が手元で実行するための未署名バイナリです。
+
+一般配布する場合は、macOSのcode signingとnotarizationの検証が必要です。まだこのリポジトリでは検証していません。
+
+この対応を入れるまでは、macOS artifactはGatekeeperでブロックされる可能性があります。
+
 ## 注意点
 
 - `vendor/` はバイナリに含める必要があります。`static-build.Dockerfile` ではbuild用stageでproduction依存をインストールしてから埋め込みます。
