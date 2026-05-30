@@ -10,6 +10,10 @@ use PHPUnit\Framework\TestCase;
 
 final class ArrayLiteralFormatterTest extends TestCase
 {
+    /**
+     * 連想配列を短縮配列構文のPHP配列リテラルへ整形する基本仕様を確認します。
+     * ネストしたリスト配列のインデントとtrailing commaもカバーします。
+     */
     public function testFormatsAssociativeArrayAsShortArrayLiteral(): void
     {
         $formatter = new ArrayLiteralFormatter();
@@ -37,6 +41,9 @@ PHP,
         );
     }
 
+    /**
+     * 空配列を1行の `[]` として出力することを確認します。
+     */
     public function testFormatsEmptyArrayOnOneLine(): void
     {
         $formatter = new ArrayLiteralFormatter();
@@ -44,6 +51,9 @@ PHP,
         self::assertSame('[]', $formatter->format([]));
     }
 
+    /**
+     * 文字列キーと文字列値のsingle quote/backslashをPHPリテラルとして安全にescapeすることを確認します。
+     */
     public function testEscapesStringKeysAndValues(): void
     {
         $formatter = new ArrayLiteralFormatter();
@@ -62,6 +72,9 @@ PHP,
         );
     }
 
+    /**
+     * `1.0` のようなfloatを `1` に崩さずPHP配列リテラルへ整形することを確認します。
+     */
     public function testFormatsFloatZeroFraction(): void
     {
         $formatter = new ArrayLiteralFormatter();
@@ -76,6 +89,10 @@ PHP,
         );
     }
 
+    /**
+     * 深すぎる配列を整形せずConversionErrorにすることを確認します。
+     * 循環参照や過度なネストによる無限再帰・メモリ枯渇を避けるための防御テストです。
+     */
     public function testThrowsConversionErrorWhenFormatterDepthLimitIsExceeded(): void
     {
         $formatter = new ArrayLiteralFormatter();

@@ -9,6 +9,10 @@ use PHPUnit\Framework\TestCase;
 
 final class ConverterTest extends TestCase
 {
+    /**
+     * PHP配列リテラル文字列をJSONへ変換する正常系を確認します。
+     * parserとJSON formatterを通したユースケース全体の最小ケースです。
+     */
     public function testConvertsArrayLiteralToJson(): void
     {
         $converter = new Converter();
@@ -21,6 +25,10 @@ final class ConverterTest extends TestCase
         self::assertNull($result->error);
     }
 
+    /**
+     * PHP配列リテラルとして未対応の構文がある場合に失敗結果を返すことを確認します。
+     * 変換失敗時に元入力を保持し、JSON出力を空にする契約もカバーします。
+     */
     public function testReturnsArrayParseError(): void
     {
         $converter = new Converter();
@@ -34,6 +42,9 @@ final class ConverterTest extends TestCase
         self::assertStringContainsString('Unsupported PHP syntax', $result->error);
     }
 
+    /**
+     * JSON文字列をPHP配列リテラルへ変換する正常系を確認します。
+     */
     public function testConvertsJsonToArrayLiteral(): void
     {
         $converter = new Converter();
@@ -46,6 +57,9 @@ final class ConverterTest extends TestCase
         self::assertNull($result->error);
     }
 
+    /**
+     * JSONとして壊れている入力が失敗結果になることを確認します。
+     */
     public function testReturnsJsonParseError(): void
     {
         $converter = new Converter();
@@ -59,6 +73,10 @@ final class ConverterTest extends TestCase
         self::assertStringContainsString('JSON parse error:', $result->error);
     }
 
+    /**
+     * top-level scalar JSONをPHP配列リテラルへ変換しないことを確認します。
+     * `true` などを許可すると、Array to JSONへ戻せずround-tripが非対称になるため拒否します。
+     */
     public function testRejectsTopLevelScalarJson(): void
     {
         $converter = new Converter();
@@ -71,6 +89,10 @@ final class ConverterTest extends TestCase
         self::assertSame('Top-level JSON value must be an object or array.', $result->error);
     }
 
+    /**
+     * JSON decodeの深さ上限を超える入力が失敗結果になることを確認します。
+     * 過度なネストによる処理時間・メモリ使用量の増加を防ぐための境界テストです。
+     */
     public function testRejectsJsonWhenDepthLimitIsExceeded(): void
     {
         $converter = new Converter();
@@ -85,6 +107,9 @@ final class ConverterTest extends TestCase
         self::assertStringContainsString('JSON parse error:', $result->error);
     }
 
+    /**
+     * Array to JSON / JSON to Arrayの両方向で `1.0` の型表現が崩れないことを確認します。
+     */
     public function testRoundTripPreservesFloatZeroFraction(): void
     {
         $converter = new Converter();

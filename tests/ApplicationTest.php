@@ -9,6 +9,10 @@ use PHPUnit\Framework\TestCase;
 
 final class ApplicationTest extends TestCase
 {
+    /**
+     * `POST /api/convert` が変換APIへdispatchされることを確認します。
+     * Application層がroutingだけを担当し、正常なJSON responseを返せることをカバーします。
+     */
     public function testDispatchesConvertApi(): void
     {
         $app = new Application();
@@ -24,6 +28,9 @@ final class ApplicationTest extends TestCase
         self::assertSame("{\n    \"name\": \"shimabox\"\n}", $payload['json']);
     }
 
+    /**
+     * 未定義のAPI pathがJSON形式の404として返ることを確認します。
+     */
     public function testReturnsNotFoundForUnknownApiPath(): void
     {
         $app = new Application();
@@ -36,6 +43,9 @@ final class ApplicationTest extends TestCase
         self::assertSame('Not Found', $payload['error']);
     }
 
+    /**
+     * 定義済みpathでもHTTP methodが一致しなければ404にすることを確認します。
+     */
     public function testReturnsNotFoundWhenConvertApiMethodDoesNotMatch(): void
     {
         $app = new Application();
@@ -47,6 +57,10 @@ final class ApplicationTest extends TestCase
         self::assertSame('Not Found', $payload['error']);
     }
 
+    /**
+     * request bodyが上限を超えた場合に413を返すことを確認します。
+     * 大きすぎる入力による処理時間やメモリ使用量の増加を入口で止めるための境界テストです。
+     */
     public function testReturnsPayloadTooLargeWhenBodyExceedsLimit(): void
     {
         $app = new Application();

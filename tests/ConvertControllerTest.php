@@ -9,6 +9,10 @@ use PHPUnit\Framework\TestCase;
 
 final class ConvertControllerTest extends TestCase
 {
+    /**
+     * `json_to_array` modeのHTTP境界で正常レスポンスを返すことを確認します。
+     * Controllerがrequest JSONを読み、Converterの結果をAPI payloadに写す契約をカバーします。
+     */
     public function testConvertsJsonToArrayLiteral(): void
     {
         $controller = new ConvertController();
@@ -35,6 +39,10 @@ PHP;
         self::assertNull($payload['error']);
     }
 
+    /**
+     * JSON変換エラーをHTTP 422として返すことを確認します。
+     * request自体は処理できているため400ではなく422にする仕様を固定します。
+     */
     public function testShowsJsonParseError(): void
     {
         $controller = new ConvertController();
@@ -52,6 +60,9 @@ PHP;
         self::assertStringContainsString('JSON parse error:', $payload['error']);
     }
 
+    /**
+     * `array_to_json` modeのHTTP境界で正常レスポンスを返すことを確認します。
+     */
     public function testConvertsArrayLiteralToJson(): void
     {
         $controller = new ConvertController();
@@ -78,6 +89,9 @@ JSON;
         self::assertNull($payload['error']);
     }
 
+    /**
+     * PHP配列リテラルの変換エラーをHTTP 422として返すことを確認します。
+     */
     public function testShowsArrayParseError(): void
     {
         $controller = new ConvertController();
@@ -95,6 +109,9 @@ JSON;
         self::assertStringContainsString('Unsupported PHP syntax', $payload['error']);
     }
 
+    /**
+     * API request body自体が不正なJSONの場合にHTTP 400を返すことを確認します。
+     */
     public function testRejectsInvalidJsonRequest(): void
     {
         $controller = new ConvertController();
@@ -107,6 +124,10 @@ JSON;
         self::assertStringContainsString('Invalid JSON request:', $payload['error']);
     }
 
+    /**
+     * request bodyがJSON arrayの場合にHTTP 400を返すことを確認します。
+     * API requestはobjectであるという境界仕様を固定します。
+     */
     public function testRejectsJsonArrayRequest(): void
     {
         $controller = new ConvertController();
@@ -118,6 +139,9 @@ JSON;
         self::assertSame('Invalid JSON request: request body must be a JSON object.', $payload['error']);
     }
 
+    /**
+     * request bodyがJSON scalarの場合にHTTP 400を返すことを確認します。
+     */
     public function testRejectsJsonScalarRequest(): void
     {
         $controller = new ConvertController();
@@ -129,6 +153,9 @@ JSON;
         self::assertSame('Invalid JSON request: request body must be a JSON object.', $payload['error']);
     }
 
+    /**
+     * 未知の変換modeをHTTP 400で拒否することを確認します。
+     */
     public function testRejectsUnknownMode(): void
     {
         $controller = new ConvertController();

@@ -9,6 +9,10 @@ use PHPUnit\Framework\TestCase;
 
 final class JsonFormatterTest extends TestCase
 {
+    /**
+     * PHPの値をpretty printされたJSONに整形する基本仕様を確認します。
+     * 日本語をunicode escapeせず、そのまま出力することもカバーします。
+     */
     public function testFormatsValueAsPrettyJsonWithoutEscapingUnicode(): void
     {
         $formatter = new JsonFormatter();
@@ -34,6 +38,9 @@ JSON,
         );
     }
 
+    /**
+     * `1.0` のようなfloatのゼロ小数部をJSON出力で保持することを確認します。
+     */
     public function testPreservesZeroFraction(): void
     {
         $formatter = new JsonFormatter();
