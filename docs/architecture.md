@@ -8,6 +8,30 @@ PHP Array JSON Converter は、PHP配列リテラルとJSONを相互変換する
 
 ## 全体構成
 
+```mermaid
+flowchart TD
+    Browser["Browser"]
+    StaticFiles["public/index.html<br/>public/assets/*"]
+    Entry["public/index.php"]
+    Application["src/Application.php"]
+    Controller["src/Controller/ConvertController.php"]
+    Converter["src/Converter.php"]
+    Parser["src/ArrayLiteralParser.php"]
+    ArrayFormatter["src/ArrayLiteralFormatter.php"]
+    JsonFormatter["src/JsonFormatter.php"]
+    ResponseFactory["src/Http/JsonResponseFactory.php"]
+
+    Browser -->|GET /| StaticFiles
+    Browser -->|POST /api/convert| Entry
+    Entry --> Application
+    Application --> Controller
+    Controller --> Converter
+    Controller --> ResponseFactory
+    Converter --> Parser
+    Converter --> ArrayFormatter
+    Converter --> JsonFormatter
+```
+
 ```text
 public/index.html
   UI structure
@@ -73,12 +97,23 @@ Content-Type: application/json
 
 PHP側の流れ:
 
-```text
-public/index.php
-  -> Application::handle()
-  -> ConvertController::convert()
-  -> Converter::arrayToJson() または Converter::jsonToArray()
-  -> JsonResponseFactory::create()
+```mermaid
+flowchart TD
+    Entry["public/index.php"]
+    Application["Application::handle"]
+    Controller["ConvertController::convert"]
+    Mode{"mode"}
+    ArrayToJson["Converter::arrayToJson"]
+    JsonToArray["Converter::jsonToArray"]
+    Response["JsonResponseFactory::create"]
+
+    Entry --> Application
+    Application --> Controller
+    Controller --> Mode
+    Mode -->|array_to_json| ArrayToJson
+    Mode -->|json_to_array| JsonToArray
+    ArrayToJson --> Response
+    JsonToArray --> Response
 ```
 
 ## API
@@ -198,6 +233,31 @@ HTTP境界の責務を持ち、変換ロジック本体は持ちません。
 HTTPを知らず、変換結果を `ConversionResult` として返します。
 
 `jsonToArray()` は top-level のJSON object / arrayだけを受け付けます。`true`, `123`, `"text"`, `null` のような top-level scalar は、PHP配列リテラルへ変換しても `arrayToJson()` 側に戻せないためエラーにします。
+
+変換方向ごとの内部処理:
+
+```mermaid
+flowchart LR
+    PhpText["ユーザー入力文字列<br/>PHP配列リテラル"]
+    Tokenize["token_get_all"]
+    Parse["ArrayLiteralParser<br/>許可構文だけ読む"]
+    PhpValueA["PHP value"]
+    JsonEncode["json_encode"]
+    JsonOutput["JSON"]
+
+    PhpText --> Tokenize --> Parse --> PhpValueA --> JsonEncode --> JsonOutput
+```
+
+```mermaid
+flowchart LR
+    JsonText["ユーザー入力文字列<br/>JSON"]
+    JsonDecode["json_decode"]
+    PhpValueB["PHP value"]
+    Format["ArrayLiteralFormatter"]
+    PhpArrayOutput["PHP配列リテラル文字列"]
+
+    JsonText --> JsonDecode --> PhpValueB --> Format --> PhpArrayOutput
+```
 
 ### `ConversionResult`
 
