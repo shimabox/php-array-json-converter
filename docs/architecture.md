@@ -131,6 +131,7 @@ Response:
 200  変換成功
 400  リクエストJSON不正、または未対応mode
 404  未定義APIパス
+413  request bodyのサイズ超過
 422  入力値の変換エラー
 ```
 
@@ -167,12 +168,14 @@ Response:
 ### `Caddyfile`
 
 - FrankenPHP 用のルーティング
+- request body は最大 1MB に制限する
 - `/api/*` は `public/index.php` にrewriteしてPHPに渡す
 - それ以外は `public/index.html` と `public/assets/*` を静的ファイルとして配信する
 
 ### `Application`
 
 - HTTP method と path の dispatch
+- request body は最大 1MB に制限し、超過時はJSONで `413` を返す
 - 現在は `POST /api/convert` のみを `ConvertController` に渡す
 - 未定義APIにはJSONで `404` を返す
 
@@ -193,6 +196,8 @@ HTTP境界の責務を持ち、変換ロジック本体は持ちません。
 - `jsonToArray()`
 
 HTTPを知らず、変換結果を `ConversionResult` として返します。
+
+`jsonToArray()` は top-level のJSON object / arrayだけを受け付けます。`true`, `123`, `"text"`, `null` のような top-level scalar は、PHP配列リテラルへ変換しても `arrayToJson()` 側に戻せないためエラーにします。
 
 ### `ConversionResult`
 
@@ -229,7 +234,7 @@ PHP配列リテラル文字列をPHPの値へ変換します。
 対応している値:
 
 - string
-- int
+- int（10進整数リテラル）
 - float
 - bool
 - null
@@ -245,6 +250,8 @@ PHP配列リテラル文字列をPHPの値へ変換します。
 - string key
 - int key
 
+配列の最大深さは128です。過度に深い入力は処理時間とメモリ使用量を抑えるためエラーにします。
+
 対応していないPHP構文:
 
 - `array()` 構文
@@ -259,6 +266,7 @@ PHP配列リテラル文字列をPHPの値へ変換します。
 - spread演算子
 - heredoc / nowdoc
 - 変数展開を含むダブルクォート文字列
+- 16進数 / 2進数 / 8進数 / underscore区切りの整数リテラル
 
 対応していない構文が含まれている場合は、PHPコードとして実行せずエラーにします。
 
@@ -266,9 +274,13 @@ PHP配列リテラル文字列をPHPの値へ変換します。
 
 PHPの値をPHP短縮配列リテラル文字列へ整形します。
 
+出力改行はプラットフォームに依存しない `\n` 固定です。配列の最大深さは128です。
+
 ### `JsonFormatter`
 
 PHPの値を整形済みJSON文字列へ変換します。
+
+`1.0` のような浮動小数の `.0` は保持します。
 
 ## 単体バイナリ配布
 
