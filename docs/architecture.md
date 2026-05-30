@@ -95,7 +95,7 @@ Content-Type: application/json
 
 `public/assets/app.js` が `/api/convert` にJSONを送ります。
 
-PHP側の流れ:
+PHP側の流れは以下です。
 
 ```mermaid
 flowchart TD
@@ -120,7 +120,7 @@ flowchart TD
 
 ### PHP配列リテラルからJSON
 
-Request:
+Request
 
 ```json
 {
@@ -129,7 +129,7 @@ Request:
 }
 ```
 
-Response:
+Response
 
 ```json
 {
@@ -141,7 +141,7 @@ Response:
 
 ### JSONからPHP配列リテラル
 
-Request:
+Request
 
 ```json
 {
@@ -150,7 +150,7 @@ Request:
 }
 ```
 
-Response:
+Response
 
 ```json
 {
@@ -234,7 +234,7 @@ HTTPを知らず、変換結果を `ConversionResult` として返します。
 
 `jsonToArray()` は top-level のJSON object / arrayだけを受け付けます。`true`, `123`, `"text"`, `null` のような top-level scalar は、PHP配列リテラルへ変換しても `arrayToJson()` 側に戻せないためエラーにします。
 
-変換方向ごとの内部処理:
+変換方向ごとの内部処理は以下です。
 
 ```mermaid
 flowchart LR
@@ -297,7 +297,7 @@ Array to JSONで受け取る値は、PHPの配列そのものではなくユー�
 ];
 ```
 
-対応している値:
+対応している値は以下です。
 
 - string
 - int（10進整数リテラル）
@@ -311,14 +311,14 @@ Array to JSONで受け取る値は、PHPの配列そのものではなくユー�
 
 文字列はシングルクォートと、変数展開を含まないダブルクォートに対応しています。ダブルクォート文字列で対応しているエスケープは `\n`, `\r`, `\t`, `\v`, `\e`, `\f`, `\\`, `\"`, `\$` です。
 
-対応しているキー:
+対応しているキーは以下です。
 
 - string key
 - int key
 
 配列の最大深さは128です。過度に深い入力は処理時間とメモリ使用量を抑えるためエラーにします。
 
-対応していないPHP構文:
+対応していないPHP構文は以下です。
 
 - `array()` 構文
 - 関数呼び出し
