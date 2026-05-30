@@ -48,6 +48,15 @@ chmod +x php-array-json-converter-linux-x86_64
 ./php-array-json-converter-linux-x86_64 php-server
 ```
 
+macOS上でLinux artifactだけ確認したい場合は、DockerでLinuxコンテナ内から起動します。
+
+```bash
+chmod +x php-array-json-converter-linux-x86_64
+docker run --rm --platform linux/amd64 -p 8080:8080 -v "$PWD":/work -w /work ubuntu:24.04 ./php-array-json-converter-linux-x86_64 php-server --listen :8080
+```
+
+Windows native binaryはまだ生成していません。Windowsで確認する場合は、WSL2上でLinux x86_64 artifactを使います。
+
 `8080` が使われている場合は、別ポートで起動します。
 
 ```bash
