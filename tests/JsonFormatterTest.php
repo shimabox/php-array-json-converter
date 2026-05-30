@@ -33,4 +33,18 @@ JSON,
             $actual,
         );
     }
+
+    public function testPreservesZeroFraction(): void
+    {
+        $formatter = new JsonFormatter();
+
+        self::assertSame(
+            <<<'JSON'
+[
+    1.0
+]
+JSON,
+            $formatter->format([1.0]),
+        );
+    }
 }
