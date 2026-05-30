@@ -96,7 +96,7 @@ chmod +x php-array-json-converter-linux-x86_64
 docker run --rm --platform linux/amd64 -p 8080:8080 -v "$PWD":/work -w /work ubuntu:24.04 ./php-array-json-converter-linux-x86_64 php-server --listen :8080
 ```
 
-2026-05-30時点で、上記のDocker確認手順によりmacOS上の `linux/amd64` Ubuntu 24.04コンテナで起動確認済みです。
+上記のDocker確認手順により、macOS上の `linux/amd64` Ubuntu 24.04コンテナで起動確認済みです。
 
 この確認は、Linux native環境での最終確認の代替ではなく、artifactがLinuxコンテナ内で起動してWeb UI/APIを返せることの確認です。
 
