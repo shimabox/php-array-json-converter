@@ -4,6 +4,12 @@ PHP配列リテラルとJSONを相互変換するローカルWebツールです�
 
 ![PHP Array JSON Converter demo](docs/assets/demo.gif)
 
+## 特徴
+
+- [FrankenPHP](https://frankenphp.dev/docs/)を利用した単体バイナリなので、PHPやDockerなしで起動できます
+- ブラウザで開くローカルWebツールとして動作します
+- PHP配列リテラルとJSONを双方向に変換できます
+
 設計の詳細は [docs/architecture.md](docs/architecture.md) を参照してください。
 単体バイナリ配布については [docs/static-binary.md](docs/static-binary.md) を参照してください。
 
