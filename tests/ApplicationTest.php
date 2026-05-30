@@ -47,6 +47,17 @@ final class ApplicationTest extends TestCase
         self::assertSame('Not Found', $payload['error']);
     }
 
+    public function testReturnsPayloadTooLargeWhenBodyExceedsLimit(): void
+    {
+        $app = new Application();
+
+        $response = $app->handle('POST', '/api/convert', str_repeat('a', Application::MAX_BODY_BYTES + 1));
+        $payload = $this->decodeJson($response->body);
+
+        self::assertSame(413, $response->statusCode);
+        self::assertSame('Payload Too Large', $payload['error']);
+    }
+
     /**
      * @return array<string, mixed>
      */

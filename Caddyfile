@@ -4,6 +4,9 @@
 
 :8080 {
 	root * public
+	request_body {
+		max_size 1MB
+	}
 
 	handle /api/* {
 		rewrite * /index.php
