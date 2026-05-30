@@ -58,4 +58,44 @@ final class ConverterTest extends TestCase
         self::assertIsString($result->error);
         self::assertStringContainsString('JSON parse error:', $result->error);
     }
+
+    public function testRejectsTopLevelScalarJson(): void
+    {
+        $converter = new Converter();
+
+        $result = $converter->jsonToArray('true');
+
+        self::assertFalse($result->succeeded());
+        self::assertSame('', $result->phpArray);
+        self::assertSame('true', $result->json);
+        self::assertSame('Top-level JSON value must be an object or array.', $result->error);
+    }
+
+    public function testRejectsJsonWhenDepthLimitIsExceeded(): void
+    {
+        $converter = new Converter();
+        $json = str_repeat('[', 129) . '0' . str_repeat(']', 129);
+
+        $result = $converter->jsonToArray($json);
+
+        self::assertFalse($result->succeeded());
+        self::assertSame('', $result->phpArray);
+        self::assertSame($json, $result->json);
+        self::assertIsString($result->error);
+        self::assertStringContainsString('JSON parse error:', $result->error);
+    }
+
+    public function testRoundTripPreservesFloatZeroFraction(): void
+    {
+        $converter = new Converter();
+
+        $arrayResult = $converter->arrayToJson('[1.0]');
+        $jsonResult = $converter->jsonToArray('[1.0]');
+
+        self::assertTrue($arrayResult->succeeded());
+        self::assertSame("[\n    1.0\n]", $arrayResult->json);
+
+        self::assertTrue($jsonResult->succeeded());
+        self::assertSame("[\n    1.0,\n]", $jsonResult->phpArray);
+    }
 }

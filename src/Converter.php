@@ -6,6 +6,8 @@ namespace PhpArrayJsonConverter;
 
 final class Converter
 {
+    private const int MAX_DEPTH = 128;
+
     public function __construct(
         private readonly ArrayLiteralFormatter $arrayLiteralFormatter = new ArrayLiteralFormatter(),
         private readonly ArrayLiteralParser $arrayLiteralParser = new ArrayLiteralParser(),
@@ -36,7 +38,12 @@ final class Converter
     public function jsonToArray(string $json): ConversionResult
     {
         try {
-            $value = json_decode($json, true, flags: JSON_THROW_ON_ERROR);
+            $value = json_decode($json, true, self::MAX_DEPTH, JSON_THROW_ON_ERROR);
+
+            if (!is_array($value)) {
+                throw new ConversionError('Top-level JSON value must be an object or array.');
+            }
+
             $phpArray = $this->arrayLiteralFormatter->format($value);
 
             return new ConversionResult(
