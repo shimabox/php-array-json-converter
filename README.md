@@ -128,3 +128,7 @@ GitHub Actionsでも、pushとpull requestに対して `composer validate --stri
 git tag v0.1.0
 git push origin v0.1.0
 ```
+
+## ライセンス
+
+MIT Licenseです。詳細は [LICENSE](LICENSE) を参照してください。
