@@ -1,0 +1,14 @@
+{
+    "$schema": "node_modules/wrangler/config-schema.json",
+    "name": "php-array-json-converter",
+    "compatibility_date": "2026-09-29",
+    "assets": {
+        "directory": "./dist"
+    },
+    "routes": [
+        {
+            "pattern": "php-array-json-converter.orukubami.sh",
+            "custom_domain": true
+        }
+    ]
+}

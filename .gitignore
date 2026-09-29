@@ -3,3 +3,5 @@ vendor/
 dist/
 .phpunit.cache/
 .php-cs-fixer.cache
+web/node_modules/
+web/.wrangler/

@@ -9,3 +9,4 @@ build
 php-array-json-converter
 .phpunit.cache
 .DS_Store
+web

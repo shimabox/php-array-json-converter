@@ -348,6 +348,10 @@ PHPの値を整形済みJSON文字列へ変換します。
 
 `1.0` のような浮動小数の `.0` は保持します。
 
+## Web版
+
+WebAssembly版のPHPをブラウザ内で動かすWeb版も、同じ `public/index.php` と `src/` を使います。`public/assets/app.js` の `/api/convert` への `fetch` を `web/src/php-bridge.js` が受け取り、ブラウザ内のPHPで処理します。詳細は [web.md](web.md) を参照してください。
+
 ## 単体バイナリ配布
 
 Web UIを維持した単体配布は、FrankenPHPのstatic binaryで検証します。
