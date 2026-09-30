@@ -12,6 +12,7 @@ PHP配列リテラルとJSONを相互変換するローカルWebツールです�
 
 設計の詳細は [docs/architecture.md](docs/architecture.md) を参照してください。
 単体バイナリ配布については [docs/static-binary.md](docs/static-binary.md) を参照してください。
+ブラウザ内でPHPを動かすWeb版については [docs/web.md](docs/web.md) を参照してください。
 
 ## ダウンロード
 
@@ -78,6 +79,18 @@ docker compose up app
 http://localhost:8080
 ```
 
+## Web版
+
+WebAssembly版のPHPをブラウザ内で動かし、単体バイナリ版と同じPHPコードで変換する静的サイトもビルドできます。Cloudflare Workers / Pagesなどの静的ホスティングに置けます。
+
+```bash
+cd web
+npm ci
+npm run build
+```
+
+詳細は [docs/web.md](docs/web.md) を参照してください。
+
 ## 開発コマンド
 
 テストを実行します。
@@ -118,7 +131,7 @@ analyse
 test
 ```
 
-GitHub Actionsでも、pushとpull requestに対して `composer validate --strict` と `composer ci` を実行します。
+GitHub Actionsでも、pushとpull requestに対して `composer validate --strict` と `composer ci` を実行し、Web版をビルドします。
 
 ## リリース
 
