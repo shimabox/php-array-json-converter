@@ -2,6 +2,9 @@
 
 PHP配列リテラルとJSONを相互変換するローカルWebツールです。
 
+バイナリをダウンロードせずに使えるWeb版はこちら👉️  https://php-array-json-converter.orukubami.sh<br>
+（Cloudflare Workersの静的アセットとして配信しています）
+
 ![PHP Array JSON Converter demo](docs/assets/demo.gif)
 
 ## 特徴
@@ -80,6 +83,8 @@ http://localhost:8080
 ```
 
 ## Web版
+
+公開URL: https://php-array-json-converter.orukubami.sh
 
 WebAssembly版のPHPをブラウザ内で動かし、単体バイナリ版と同じPHPコードで変換する静的サイトもビルドできます。Cloudflare Workers / Pagesなどの静的ホスティングに置けます。
 
