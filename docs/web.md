@@ -59,6 +59,7 @@ npm run dev
 
 ```bash
 cd web
+npm ci
 npx wrangler login
 npm run deploy
 ```
