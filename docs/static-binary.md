@@ -41,7 +41,7 @@ http://localhost:8080
 FrankenPHPコンテナで、static binary化する前のCaddyfileを確認できます。
 
 ```bash
-docker run --rm -p 8080:8080 -v "$PWD":/app -w /app dunglas/frankenphp frankenphp run --config Caddyfile
+docker run --rm -p 127.0.0.1:8080:8080 -e BIND=0.0.0.0 -v "$PWD":/app -w /app dunglas/frankenphp frankenphp run --config Caddyfile
 ```
 
 これは開発中のCaddyfile確認用です。単体バイナリ化後の起動は `php-server` を使います。
@@ -83,17 +83,17 @@ chmod +x php-array-json-converter-linux-x86_64
 http://localhost:8080
 ```
 
-`8080` が使われている場合は、別ポートで起動します。
+`8080` が使われている場合は、環境変数 `PORT` で別ポートを指定して起動します。埋め込まれた `Caddyfile` が使われるため、`--listen` では変わりません。
 
 ```bash
-./php-array-json-converter-linux-x86_64 php-server --listen :8081
+PORT=8081 ./php-array-json-converter-linux-x86_64 php-server
 ```
 
 macOS上でLinux artifactだけ確認したい場合は、DockerでLinuxコンテナ内から起動します。
 
 ```bash
 chmod +x php-array-json-converter-linux-x86_64
-docker run --rm --platform linux/amd64 -p 8080:8080 -v "$PWD":/work -w /work ubuntu:24.04 ./php-array-json-converter-linux-x86_64 php-server --listen :8080
+docker run --rm --platform linux/amd64 -p 127.0.0.1:8080:8080 -e BIND=0.0.0.0 -v "$PWD":/work -w /work ubuntu:24.04 ./php-array-json-converter-linux-x86_64 php-server
 ```
 
 上記のDocker確認手順により、macOS上の `linux/amd64` Ubuntu 24.04コンテナで起動確認済みです。
@@ -170,6 +170,8 @@ Windows native `.exe` として配布する場合は、別途build方法と動�
 ## 注意点
 
 - `vendor/` はバイナリに含める必要があります。`static-build.Dockerfile` ではbuild用stageでproduction依存をインストールしてから埋め込みます。
+- `Caddyfile` は既定で `127.0.0.1` と `::1` だけで待ち受けます。待ち受けるアドレスは環境変数 `BIND`、ポートは `PORT` で変えられます。コンテナ内で動かす場合は、ホストからポートを転送できるよう `BIND=0.0.0.0` を指定します。
+- 埋め込むPHPのバージョンは `static-build.Dockerfile` と `.github/workflows/static-binary.yml` の `PHP_VERSION` で固定しています。PHPのセキュリティリリースが出たら両方を上げ、tagをpushしてReleaseを作り直します。
 - static binaryではPHP拡張をあとから動的ロードできません。現時点ではPHP拡張として `tokenizer` をbuild時に含めます。`json` はPHP 8では組み込みのため、拡張指定からは外しています。
 - macOS向けバイナリはmacOS runnerでbuildします。DockerによるLinux向けbuildとは別系統です。
 - macOS向けバイナリは現時点では未署名・未notarizeです。

@@ -25,7 +25,8 @@ COPY --from=app /app ./
 
 WORKDIR /go/src/app
 
-RUN PHP_EXTENSIONS=tokenizer \
+RUN PHP_VERSION=8.5.12 \
+    PHP_EXTENSIONS=tokenizer \
     PHP_EXTENSION_LIBS=watcher \
     SPC_CMD_VAR_FRANKENPHP_XCADDY_MODULES=" " \
     EMBED=dist/app/ \

@@ -2,7 +2,8 @@
 	auto_https off
 }
 
-:8080 {
+:{$PORT:8080} {
+	bind {$BIND:127.0.0.1 [::1]}
 	root * public
 	request_body {
 		max_size 1MB
