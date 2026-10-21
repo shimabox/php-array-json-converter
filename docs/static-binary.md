@@ -170,6 +170,7 @@ Windows native `.exe` として配布する場合は、別途build方法と動�
 ## 注意点
 
 - `vendor/` はバイナリに含める必要があります。`static-build.Dockerfile` ではbuild用stageでproduction依存をインストールしてから埋め込みます。
+- 埋め込むPHPのバージョンは `static-build.Dockerfile` と `.github/workflows/static-binary.yml` の `PHP_VERSION` で固定しています。PHPのセキュリティリリースが出たら両方を上げ、tagをpushしてReleaseを作り直します。
 - static binaryではPHP拡張をあとから動的ロードできません。現時点ではPHP拡張として `tokenizer` をbuild時に含めます。`json` はPHP 8では組み込みのため、拡張指定からは外しています。
 - macOS向けバイナリはmacOS runnerでbuildします。DockerによるLinux向けbuildとは別系統です。
 - macOS向けバイナリは現時点では未署名・未notarizeです。

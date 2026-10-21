@@ -69,6 +69,7 @@ jobs:
       - name: Build
         working-directory: build/frankenphp
         run: |
+          PHP_VERSION=8.5.12 \
           PHP_EXTENSIONS=tokenizer \
           PHP_EXTENSION_LIBS=watcher \
           SPC_CMD_VAR_FRANKENPHP_XCADDY_MODULES=" " \
