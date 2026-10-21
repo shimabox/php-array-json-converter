@@ -41,13 +41,15 @@ chmod +x php-array-json-converter-linux-x86_64
 ./php-array-json-converter-linux-x86_64 php-server
 ```
 
-`8080` が使われている場合は、別ポートで起動します。
+`8080` が使われている場合は、環境変数 `PORT` で別ポートを指定して起動します。
 
 ```bash
-./php-array-json-converter-macos-arm64 php-server --listen :8081
+PORT=8081 ./php-array-json-converter-macos-arm64 php-server
 ```
 
-起動後、ブラウザで起動したポートを開きます。通常は `http://localhost:8080`、上記のように `--listen :8081` で起動した場合は `http://localhost:8081` です。
+起動後、ブラウザで起動したポートを開きます。通常は `http://localhost:8080`、上記のように `PORT=8081` で起動した場合は `http://localhost:8081` です。
+
+同じマシンからだけ接続できるよう、`127.0.0.1` と `::1` で待ち受けます。ほかの端末から接続させたい場合は、`BIND=0.0.0.0` を付けて起動します。
 
 ## 対応状況
 
@@ -59,7 +61,7 @@ macOS上でLinuxバイナリだけ確認したい場合は、DockerでLinuxコ�
 
 ```bash
 chmod +x php-array-json-converter-linux-x86_64
-docker run --rm --platform linux/amd64 -p 8080:8080 -v "$PWD":/work -w /work ubuntu:24.04 ./php-array-json-converter-linux-x86_64 php-server --listen :8080
+docker run --rm --platform linux/amd64 -p 127.0.0.1:8080:8080 -e BIND=0.0.0.0 -v "$PWD":/work -w /work ubuntu:24.04 ./php-array-json-converter-linux-x86_64 php-server
 ```
 
 ## ローカル環境セットアップ
